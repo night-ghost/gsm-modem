@@ -17,9 +17,6 @@ TX from the modem's TTL port to RX1 on the Arduino, RX on the modem's TTL port t
 Shared GND connecting the Modem with the Arduino and the power source and finally the VIN to your power source. 
 The modem I'm using works with 5 to 20 v so I supply it from the X350 Pro's 11.1v battery. 
 
-To handle loss of connection, you'll need to connect Pin 2 of your Arduino to the PWRKEY / PWRKEY_OUT pin on your modem 
-and then connect Pin 3 of your Arduino to the Reset Pin of the Arduino
-
 
 based on:
 
@@ -220,22 +217,9 @@ DBG_PRINTLN("console OK");
 console_done:
         Green_LED_OFF;
         Red_LED_OFF;
-#if !defined(DEBUG) 
-        serial.end();
-#endif
+
 }            
 
-boolean powerUpOrDown(){
-    boolean powered = false;
-    digitalWrite(powerKey,LOW);
-    delay(1000);
-    digitalWrite(powerKey,HIGH);
-    delay(2000);
-    digitalWrite(powerKey,LOW);
-    delay(3000);
-    powered = true;
-    return powered;
-}
 
 
 
@@ -245,17 +229,17 @@ void setup()
     pinMode(GREEN_LED, OUTPUT); // All Good LED
     pinMode(RED_LED, OUTPUT); // Warning LED
     Green_LED_OFF;		 // Set All Good LED to Off
+    Red_LED_ON; 
     digitalWrite(resetPin, HIGH); // Set Reset Pin
 
-    pinMode(powerKey, OUTPUT);
-
+    gsm.initGSM();  // настроить ноги к GSM модулю
+    
     // Set Data Rate for debug Ports
-    debug.begin(57600); // Start USB Port debug @ 57,600 Baud Rate (For Monitor/Debug only)
-    gsm.begin(57600); // Start GSM Module debug Communication @ 57,600 Baud Rate
+    debug.begin(38400); // Start Debug Port @ 38400 Baud Rate (For Monitor/Debug only)
+
+    serial.begin(57600); // Start Autopilot/Console Communication @ 57,600 Baud Rate
     
-    serial.begin(57600); // Start Autopilot Communication @ 57,600 Baud Rate
-    
-    consoleCommands();     // Wait 1 Seconds for power on (Add Auto on feature through GSM module power button pin
+    consoleCommands();     // Wait 1 Seconds for commands 
 
     Red_LED_OFF; // Set Warning LED to Off - we are ready
 
@@ -275,8 +259,9 @@ again:
     // Initializing GSM Module
 debug.println_P(PSTR("Initializing..."));
 
+//      try to Start GSM Module Communication
     if(!gsm.begin() ) {
-	while(1){
+	for(int i=0; i<15; i++){ // 9 seconds of flashing
             Red_LED_OFF;
             delay_300();
             Red_LED_ON;
@@ -284,6 +269,13 @@ debug.println_P(PSTR("Initializing..."));
             delay_300();
             Green_LED_ON;
 	}
+                        // and then restart
+        __asm__ __volatile__ (    // Jump to RST vector
+            "clr r30\n"
+            "clr r31\n"
+            "ijmp\n"
+        );
+
     }
 
 debug.println_P(PSTR("SIM800 Ready & Loading"));
@@ -306,12 +298,10 @@ debug.println_P(PSTR("Connecting to UDP Server"));
 
 	// this says CONNECT
 	gsm.connectUDP(p.url, p.port);
-
-/* server case
-		//while(!sendATCommand("AT+CIPCTL=1","+CREG: 1",100)); // Set port to listen. Not needed
-		//while(!sendATCommand("AT+CIPSERVER=1,8888",ok,1000)); // TCP/UDP Server
-*/
-    // now we in transparent data mode, exit by DTR, return back to ATO
+	
+    // now we in transparent data mode, exit by DTR, to return back say "ATO"
+        serial.gsmMode(1);
+debug.println_P(PSTR("Connected!"));
 
 	Green_LED_ON; // Turn on All Good LED
 	Red_LED_OFF;    // Turn off Warning LED
@@ -322,22 +312,6 @@ debug.println_P(PSTR("Connecting to UDP Server"));
 	delay_1000();
 	Green_LED_OFF;
 
-        serial.gsmMode(1);
-
-/*
-String dyndns = "members.dyndns.org";
-String hostname = "YOUR DYNAMIC HOST NAME"; // IE drone.dyndns.org
-String userpwdb64 = "BASE64 Username & Password"; // username:password
-
-String currentIP = "YOUR CURRENT IP ADDRESS";
-debug.print("AT+CIPSEND\r");
-debug.print("GET /nic/update?hostname=" + hostname + "&myip=" + currentIP + "&wildcard=NOCHG&mx=NOCHG&backmx=NOCHG HTTP/1.0\r");
-debug.print("Host: " + dyndns + "\r");
-debug.print("Authorization: Basic " + userpwdb64 + "\r");
-debug.print("User-Agent: arduinodydns - 1.1\r");
-debug.print("\x1A\r");
-
-*/
 
     
 }
@@ -366,9 +340,14 @@ void check_disconnect(char b){
     // Check For Disconnection
     if(b=='\n' || b=='\r' || strPtr >= &strBuf[STR_BUF_SIZE-1]) {
 	if(strncasecmp_P( strBuf, patt, sizeof(patt)-1 )==0){
-	    if(powerUpOrDown()){
-	        digitalWrite(3,LOW);
-	    }
+	    // we lost connection - do a software reset
+
+                __asm__ __volatile__ (    // Jump to RST vector
+                    "clr r30\n"
+                    "clr r31\n"
+                    "ijmp\n"
+                );
+
         }
         strPtr = &strBuf[0];
     } else 
@@ -382,7 +361,8 @@ void loop(){
     getData(); // all GSM magick done by gsmSerial class
     
 // now we has a place for misc housekeeping - communication protocol parsed and variables filled by data
-    
+
+    // at the end of HEARTBEAT packet we can add own state packet    
 
 /*
     // Relay All GSM Module communication to Autopilot and USB (USB for monitor/debug only)
@@ -416,3 +396,4 @@ void chute_got_climb() {}
 void chute_got_atti() {}
 void chute_got_imu() {}
 void chute_got_alterr() {}
+

@@ -8,18 +8,17 @@
 #define GREEN_LED 12 // All Good LED Turns green when data is being sent over UDP Connection
 #define RED_LED 11   // Error LED Turns Red when error is encountered, turns off if all is okay
 
-#define powerKey 2 // Set PWRKEY pin
 #define resetPin 3 // Set reset pin
 
 
 // --------- GSM section
 
 #define GSM_DTR  6
-#define GSM_RING 7
+//#define GSM_RING 7
 #define GSM_RX   8
 #define GSM_TX   9
 #define GSM_EN   10
-#define GSM_INT  PD3 // pin 1
+//#define GSM_INT  PD3 // pin 1
 
 #define GSM_SPEED 38400// 9600 // 19200 //
 

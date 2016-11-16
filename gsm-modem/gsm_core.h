@@ -209,17 +209,19 @@ void GSM::end() {
 
 
 void GSM::initGSM(void){
-    pinMode(GSM_EN,OUTPUT);
     digitalWrite(GSM_EN,HIGH);
+    pinMode(GSM_EN,OUTPUT);
 
-    pinMode(GSM_TX, OUTPUT);
     digitalWrite(GSM_TX,HIGH);
+    pinMode(GSM_TX, OUTPUT);
 
-    pinMode(GSM_DTR, OUTPUT);
     digitalWrite(GSM_DTR,HIGH);
+    pinMode(GSM_DTR, OUTPUT);
     
     pinMode(GSM_RX, INPUT);
-    pinMode(GSM_INT, INPUT_PULLUP);
+//    pinMode(GSM_INT, INPUT_PULLUP);
+    
+// GSM_RING not used
 }
 
 
