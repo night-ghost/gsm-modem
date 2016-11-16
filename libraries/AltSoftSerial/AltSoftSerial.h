@@ -63,8 +63,8 @@ public:
 	static void flushInput();
 	static void flushOutput();
 
-	size_t write(uint8_t byte);
-	static size_t write_S(uint8_t byte);
+	size_t write(uint8_t b);
+	static uint8_t write_S(uint8_t b);
 
 	inline void flush() { flushOutput(); }
 
@@ -77,7 +77,7 @@ public:
 //	static uint8_t library_version() { return 1; }
 //	static void enable_timer0(bool enable) { }
 //	static bool timing_error;
-	inline bool enabled(){ CHECK_INT_INPUT_CAPTURE(); }
+	inline bool enabled(){ return CHECK_INT_INPUT_CAPTURE(); }
 private:
 	static void init(uint32_t cycles_per_bit);
 //	static void writeByte(uint8_t byte);

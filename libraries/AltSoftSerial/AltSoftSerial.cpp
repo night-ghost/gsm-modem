@@ -96,13 +96,18 @@ void AltSoftSerial::end(void)
 /**           Transmission             **/
 /****************************************/
 
-size_t AltSoftSerial::write_S(uint8_t b)
+uint8_t AltSoftSerial::write_S(uint8_t b)
 {
 	uint8_t intr_state, head;
 
 	head = (tx_buffer_head + 1) & (TX_BUFFER_SIZE - 1);
 	//if (head >= TX_BUFFER_SIZE) head = 0;
-	while (tx_buffer_tail == head) ; // wait until space in buffer
+	
+	uint32_t deadTime=millis()+20; // 20ms max time to wait
+	
+	while (tx_buffer_tail == head){ // wait until space in buffer
+	    if(millis()>deadTime) return 0; // timeout - something went wrong
+	}
 	intr_state = SREG;
 	cli();
 	if (tx_state) {
@@ -122,6 +127,8 @@ size_t AltSoftSerial::write_S(uint8_t b)
 
 size_t AltSoftSerial::write(uint8_t b){
     return write_S(b);
+    
+
 }
 
 
