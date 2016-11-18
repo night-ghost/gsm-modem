@@ -51,7 +51,7 @@ class AltSoftSerial : public BetterStream
 public:
 	AltSoftSerial() { }
 	~AltSoftSerial() { end(); }
-	inline static void begin(uint32_t baud) { init((ALTSS_BASE_FREQ + baud / 2) / baud); }
+	inline static void begin(uint32_t baud) { init((ALTSS_BASE_FREQ + (baud / 2) ) / baud); }
 	static void end();
 	uint8_t peek();
 	uint8_t read();

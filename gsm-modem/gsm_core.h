@@ -45,8 +45,8 @@ extern void delay_50();
 extern void delay_10();
 extern void delay_1();
 
-//char GSM::GSM_response[RESPONCE_LENGTH]; объединен с буфером протоколов телеметрии
-#define GSM_response (msg.response)
+char GSM::GSM_response[RESPONCE_LENGTH]; 
+//#define GSM_response (msg.response)
 byte GSM::lastError=0;
 byte GSM::isTransparent=0;
 byte GSM::isActive=0;
@@ -105,7 +105,7 @@ bool GSM::cregWait(){
 
 
 bool GSM::syncSpeed() {
-    for(byte i=25;i!=0; i--)			// speed negotiation
+    for(byte i=55;i!=0; i--)			// speed negotiation
         if(GSM::command(PSTR(""), 200) ) return true;
 
     return false;
@@ -170,8 +170,8 @@ bool  GSM::begin(long speed){
 	    pulseReset();
 	}
         command(PSTR("+CFUN=1,1")); // reset
-        for(byte i=5;i>0;i--)
-            delay_1000();	// delay 5 seconds
+        for(byte i=7;i>0;i--)
+            delay_1000();	// delay 7 seconds
         
     } while(try_count-- >0); /// максимальное время ожидания при отсутствии сети - 10 раз по (10 секунд плюс время ожидания команды), около 3 минут
 
@@ -263,6 +263,8 @@ void GSM::doOnDisconnect(){
 	// надо сбросить модуль и уйти на setup()
 	pulseDTR();
 	pulseReset();
+	GSM::isTransparent=false;
+	
 	GSM::command(PSTR("+CFUN=1,1")); // reset
 	__asm__ __volatile__ (    // Jump to RST vector
             "clr r30\n"
@@ -275,24 +277,18 @@ void GSM::doOnDisconnect(){
 
 void GSM::readOut() { // Clean the input buffer from last answer and unsolicit answers
     char c;
-    char * cp = GSM_response;
 
     while( gsm.available_S()) {
 #ifdef GSM_DEBUG
 serial.print_P(PSTR("< "));
 #endif
-	while( gsm.available()) {
+	while( gsm.available_S()) {
 	    c=gsm.read_S();    
 #ifdef GSM_DEBUG
 serial.print(c);	    
 #endif
 #if defined(USE_GPRS)
-	    *cp++=c;
-
-            if((result_ptr=strstr_P(GSM_response, PSTR("DEACT"))) != NULL)  { // окончательная ошибка
-                doOnDisconnect();
-	    }
-	    if(c=='\n') cp = GSM_response;
+            check_disconnect(c);
 #endif
 	}
 	delay_10(); // wait for next char
@@ -371,6 +367,7 @@ serial.print_P(PSTR("#"));
 serial.print(c); if(c=='\n') serial.print('#'); 
 #endif
     	    } while(gsm.available_S()); // вычитать все что есть, а потом проверять будем
+
     	    Green_LED_OFF;
 
 	    // данные закончились, можно и проверить, если еще ответ не получен
@@ -379,7 +376,7 @@ serial.print(c); if(c=='\n') serial.print('#');
                 if((result_ptr=strstr_P(GSM_response, answer)) != NULL)  { // окончательный ответ
                     has_answer = 1;
 #ifdef GSM_DEBUG
-//serial.print_P(PSTR("="));
+serial.print_P(PSTR("="));
 #endif
                 } else
                 if((result_ptr=strstr_P(GSM_response, PSTR("ERROR"))) != NULL)  { // окончательная ошибка
@@ -393,25 +390,14 @@ serial.print(c); if(c=='\n') serial.print('#');
                     doOnDisconnect();
 		}
 #endif
-/*
-                if(has_answer){ // ответ только что получен
-		    do {
-			while(gsm.available()) {
-        		    *cp++ = c = gsm.read();
-        		    *cp=0;
-//serial.print(c);
-			}
-			delay_10();
-		    } while(gsm.available());
-		}
-*/
+
             }
 
             if( answer2 !=NULL) {
                 result2_ptr=strstr_P(GSM_response, answer2); // промежуточный ответ
                 hasAnswer2 = (result2_ptr!=0);
 #ifdef GSM_DEBUG
-//serial.printf_P(PSTR("#2< "),result2_ptr);
+serial.printf_P(PSTR("#2< "),result2_ptr);
 #endif
             }
 
@@ -422,7 +408,7 @@ serial.print(c); if(c=='\n') serial.print('#');
 
     
 #ifdef GSM_DEBUG
-//serial.println("\n# done");
+serial.println("\n# done");
 #endif
 
     return lastError=has_answer;
@@ -747,11 +733,12 @@ bool GSM::initUDP(uint16_t port){
 bool GSM::connectUDP(char *url, uint16_t port){
     readOut();
 
-    gsm.print_P(PSTR("+CIPSTART=\"UDP\",\""));
+    // AT+CIPSTART="protocol","ip address or domain","port #"
+    gsm.print_P(PSTR("+CIPSTART=\"UDP\",\"")); 
     gsm.print(url);
     gsm.print_P(PSTR("\","));
     gsm.println(port);
-    // AT+CIPSTART="protocol","ip address or domain","port #"
+
     if(1==wait_answer(PSTR("OK"),PSTR("CONNECT"),3000)) {
 	GSM::isTransparent=1;
 	return true;

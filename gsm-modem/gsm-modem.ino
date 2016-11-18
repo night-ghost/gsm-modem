@@ -306,9 +306,6 @@ debug.println_P(PSTR("Connected!"));
 	Green_LED_ON; // Turn on All Good LED
 	Red_LED_OFF;    // Turn off Warning LED
 
-//	debug.end(); // Stop debug communication - let it translates serial
-// at startup	serial.begin(57600); // Start Autopilot Communication @ 57,600 Baud Rate, autoBaud is on
-
 	delay_1000();
 	Green_LED_OFF;
 
@@ -331,25 +328,27 @@ void startUPWait(){
     Red_LED_OFF;
 }
 
+void raw_check(){
+    const static PROGMEM char patt[]="DEACT";
+
+    if(strncasecmp_P( strBuf, patt, sizeof(patt)-1 )==0){
+    // we lost connection - do a software reset
+        gsm.doOnDisconnect();
+
+    }
+}
 
 
 void check_disconnect(char b){
 
-    const static PROGMEM char patt[]="DEACT";
-
     // Check For Disconnection
-    if(b=='\n' || b=='\r' || strPtr >= &strBuf[STR_BUF_SIZE-1]) {
-	if(strncasecmp_P( strBuf, patt, sizeof(patt)-1 )==0){
-	    // we lost connection - do a software reset
-
-                __asm__ __volatile__ (    // Jump to RST vector
-                    "clr r30\n"
-                    "clr r31\n"
-                    "ijmp\n"
-                );
-
-        }
+    if(b=='\n' || b=='\r') {
+        raw_check();
         strPtr = &strBuf[0];
+    } else if(strPtr >= &strBuf[STR_BUF_SIZE-1]) {
+        raw_check();
+        memcpy(strPtr-10, strBuf, 10); // move last 10 bytes to begin
+        strPtr = &strBuf[10];
     } else 
 	*strPtr++=b;
 
@@ -363,6 +362,8 @@ void loop(){
 // now we has a place for misc housekeeping - communication protocol parsed and variables filled by data
 
     // at the end of HEARTBEAT packet we can add own state packet    
+
+
 
 /*
     // Relay All GSM Module communication to Autopilot and USB (USB for monitor/debug only)

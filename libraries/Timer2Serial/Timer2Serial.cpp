@@ -85,7 +85,7 @@ void Timer2Serial::begin(long speed){
     case 38400:
 	div=8;
 	prescaler= (1<<CS21); // prescaler = 8, 1MHz, T=1
-	_tx_delay = 26; // странный глюк Ардуины - работает с 212 то есть в 4 раза быстрее - 153600
+	_tx_delay = 52; // странный глюк Ардуины - работает с 212 то есть в 4 раза быстрее - 153600
 	return;
     
 	
@@ -102,7 +102,7 @@ void Timer2Serial::begin(long speed){
     }
 
     // Precalculate the various delays, in number of 4-cycle delays
-    _tx_delay = (F_CPU / speed) / div;
+    _tx_delay = ((F_CPU + (speed/2)) / speed) / div;
 
     fInt=1; // all clear!
 }

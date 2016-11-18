@@ -5,51 +5,18 @@ struct Params {
 
 #define PARAMS_END 1
 
-/* 30 .. 4 */
-    char phone1[16];
+/* 1 .. 17 */
+    char url[64];
 
-/* 34 .. 4 */
-    char phone2[16];
-
-/* 38 .. 4 */
-    char phone3[16];
-
-/* 42 .. 4 */
-    char phone4[16];
-
-/* 46 .. 11 */
-    char url[44];
-
-/* 57 .. 6 */
-    char apn[44]; // beeline.internet.ru
+/* 18 .. 6 */
+    char apn[64]; // beeline.internet.ru
 
 
 /* 63 END */
 
 } p = { 
-/* 0 */    8888, // port
+/* 0 */    DATA_PORT, // port
 
-#ifdef PHONE1
-/* 30 */    PHONE,
-#else
-	    "",
-#endif
-
-#ifdef PHONE1
-/* 34 */    PHONE1,
-#else
-	    "",
-#endif
-#ifdef PHONE2
-/* 38 */    PHONE2,
-#else
-	    "",
-#endif
-#ifdef PHONE3
-/* 42 */    PHONE3,
-#else
-	    "",
-#endif
 /* 46 */    "",  // http:/ykoctpa.ru/map?q=
 
 /* 57 */    "",  // beeline.internet.ru
@@ -64,8 +31,6 @@ struct StrParam {
 };
 
 const StrParam strParam[] = {
-    { p.phone1, sizeof(p.phone1) },
-    { p.phone2, sizeof(p.phone2) },
     { p.url, sizeof(p.url) },
     { p.apn, sizeof(p.apn) },
 };
@@ -101,7 +66,7 @@ struct Coord {
 } coord;
 
 
-#define SERIAL_BUFSIZE 64 /* 19  */
+#define SERIAL_BUFSIZE 128
 byte buf[SERIAL_BUFSIZE+1]; // буфер команд с интерфейса и прочих надобностей
 
 

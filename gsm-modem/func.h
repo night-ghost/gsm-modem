@@ -73,24 +73,26 @@ again:
 	        
 	        if(millis()>pt) break; 
 	    }
-	    
-	    long speed;
-	    
+	    	    
 	    if(pulse == 255)    pulse = last_pulse; // no input at all - use last
 	    else                last_pulse = pulse; // remember last correct time
 	
 	// F_CPU   / BAUD for 115200 is 138
 	// 1000000 / BAUD for 115200 is 8.68uS
 	//  so I has no idea about pulse times - they are simply measured
-	
-	    if(     pulse < 11) 	speed = 115200;
-	    else if(pulse < 19) 	speed =  57600;
-	    else if(pulse < 29) 	speed =  38400;
-	    else if(pulse < 40) 	speed =  28800;
-	    else if(pulse < 60) 	speed =  19200;
-	    else if(pulse < 150)	speed =   9600;
-	    else                        speed =   4800;
 
+
+            byte sp;
+            if(     pulse < 11)      sp = 24; 
+            else if(pulse < 19)      sp = 12; 
+            else if(pulse < 29)      sp =  8; 
+            else if(pulse < 40)      sp =  6; 
+            else if(pulse < 60)      sp =  4; 
+            else if(pulse < 150)     sp =  2; 
+            else                     sp =  1; 
+
+            long speed = sp*4800;
+        	
 	    serial.begin(speed);
 	    Green_LED_OFF;
 	    Red_LED_OFF;
@@ -106,7 +108,7 @@ again:
  #include "../GCS_MAVLink/include/mavlink/v1.0/checksum.h"
 #endif
 
-bool is_eeprom_valid(){// родная реализация кривая, у нас есть CRC из MAVLINKa, заюзаем его
+bool is_eeprom_valid(){
 
     register uint8_t *p, *ee;
     uint16_t i;
@@ -126,18 +128,7 @@ bool is_eeprom_valid(){// родная реализация кривая, у н�
 
 
 void Read_EEPROM_Config(){ 
-
-#if 1 // MAX_PARAMS * 4 < 255
     eeprom_read_len((byte *)&p, EEPROM_PARAMS, sizeof(p));
-#else
-    uint8_t *pp;
-    uint16_t i, ee;
-
-// eeprom_read_len недостаточно
-    for(i=sizeof(p), pp=(byte *)&p,  ee=EEPROM_PARAMS;  i>0; i--,ee++) { // байта для адреса мало
-	*pp++ = (byte)eeprom_read_byte( (byte *)ee );
-    }
-#endif
 }
 
 void write_Params_ram_to_EEPROM() { // записать зону параметров в EEPROM

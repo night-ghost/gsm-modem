@@ -13,27 +13,27 @@
 
 // --------- GSM section
 
-#define GSM_DTR  6
+#define GSM_DTR  3
 //#define GSM_RING 7
 #define GSM_RX   8
 #define GSM_TX   9
-#define GSM_EN   10
+#define GSM_EN   17
 //#define GSM_INT  PD3 // pin 1
 
-#define GSM_SPEED 38400// 9600 // 19200 //
+#define GSM_SPEED 57600  //38400// 9600 // 19200 //
 
-//#define GSM_SMS_URL "maps.google.ru/maps?q="     // форматировать координвты под ссылку на карты гугля
-#define GSM_SMS_URL "ykoctpa.ru/map?q="          // а тут короче и есть Яндекс
+
+#define DATA_PORT 8888
 
 
 
 #define DEBUG_TX_PIN 4 // нога вывода отладки
 
 #ifdef DEBUG
-  #define DBG_PRINTLN(x)     { serial.print_P(PSTR("#" x)); serial.println();  serial.wait();  }.
-  #define DBG_PRINTVARLN(x)  { serial.write('#'); serial.print(#x); serial.print(": "); serial.println(x);  serial.wait();  }
-  #define DBG_PRINTVAR(x)    { serial.write('#'); serial.print(#x); serial.print(": "); serial.print(x); serial.print(" ");  }
-  #define DBG_PRINTF(x,...)  { serial.printf_P(PSTR("#" x),## __VA_ARGS__); serial.wait();  }
+  #define DBG_PRINTLN(x)     { { serial.print_P(PSTR("#" x)); serial.println();  serial.wait();  } }
+  #define DBG_PRINTVARLN(x)  { { serial.write('#'); serial.print(#x); serial.print(": "); serial.println(x);  serial.wait();  } }
+  #define DBG_PRINTVAR(x)    { { serial.write('#'); serial.print(#x); serial.print(": "); serial.print(x); serial.print(" ");  } }
+  #define DBG_PRINTF(x,...)  { { serial.printf_P(PSTR("#" x),## __VA_ARGS__); serial.wait();  } }
 #else
   #define DBG_PRINTLN(x)     {}
   #define DBG_PRINTVAR(x)    {}

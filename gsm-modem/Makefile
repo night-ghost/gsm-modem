@@ -7,7 +7,7 @@
 
 BOARD_TAG    = atmega328
 VARIANT    = standard
-F_CPU = 8000000
+F_CPU = 16000000
 
 
 #-fgraphite, -fgraphite-identity, -floop-block, -floop-interchange, -floop-strip-mine, -floop-parallelize-all, and -ftree-loop-linear
