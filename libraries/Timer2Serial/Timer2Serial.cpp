@@ -76,16 +76,24 @@ void Timer2Serial::begin(long speed){
     byte div=1;
 
     switch(speed) {
+    case 11520:
+	prescaler= (1<<CS21); // prescaler = 8, 1MHz, T=1
+	div=8; 
+	_tx_delay = 16; // don't works
+	return;
+	break;
+    
     case 57600:
 	prescaler= (1<<CS21); // prescaler = 8, 1MHz, T=1
 	div=8; 
-	// _tx_delay = 17;
+	_tx_delay = 34; // measured
+	return;
 	break;
 
     case 38400:
 	div=8;
 	prescaler= (1<<CS21); // prescaler = 8, 1MHz, T=1
-	_tx_delay = 52; // странный глюк Ардуины - работает с 212 то есть в 4 раза быстрее - 153600
+	_tx_delay = 51; // measured -  странный глюк Ардуины - работает с 212 то есть в 4 раза быстрее - 153600
 	return;
     
 	

@@ -183,7 +183,8 @@ void getSerialLine(byte *cp, void(cb)() ){	// получение строки
 	}
 	
 	byte c=serial.read_S();
-// uses .available	if(c==0) continue; // пусто
+
+//DBG_PRINTF("one c=%x\n", c)
 	
 	if(c==0x0d || (cnt && c==0x0a)){
 //	    serial.println();
@@ -192,11 +193,6 @@ void getSerialLine(byte *cp, void(cb)() ){	// получение строки
 	}
 	if(c==0x0a) continue; // skip unneeded LF
 	
-/*	if(c==0x08){   no manual editing
-	    if(cnt) cnt--;
-	    continue;
-	}
-*/
 	cp[cnt]=c;
 	if(cnt<SERIAL_BUFSIZE) cnt++;
     

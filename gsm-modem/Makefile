@@ -71,7 +71,7 @@ ARDUINO_HEADER = dummy_header.h
 USER_LIB_PATH =  ../libraries
 CXXFLAGS_STD = -Wno-deprecated-declarations -std=gnu++11  -fno-exceptions -Wl,--gc-sections -fno-threadsafe-statics $(OPT) -Wl,--relax -felide-constructors -std=c++0x
 CFLAGS_STD =  -fno-exceptions  -Wl,--gc-sections  $(OPT) -Wl,--relax 
-LDFLAGS = -Wl,--relax
+#LDFLAGS = -Wl,--relax
 MCU=atmega328p
 
 

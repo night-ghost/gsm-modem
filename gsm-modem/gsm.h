@@ -30,24 +30,35 @@ class GSM: public AltSoftSerial
     static bool begin(long speed);
     static void end();
 
-    static byte _write(uint8_t c);
-
     static void initGSM(void);
     static void readOut(void);
     static bool set_sleep(byte mode);
     static void turnOff();
     static uint8_t wait_answer(const char* answer, const char* answer2, unsigned int timeout);
     static uint8_t wait_answer(const char* answer, unsigned int timeout);
-    static uint8_t command(const char* cmd, const char* answer, const char* answer2, uint16_t time);
-    static uint8_t command(const char* cmd, const char* answer, const char* answer2);
-    static uint8_t command(const char* cmd, const char* answer, uint16_t time);
-    static uint8_t command(const char* cmd, const char* answer);
-    static uint8_t command(const char* cmd, uint16_t time);
-    static uint8_t command(const char* cmd);
+    
+    static uint8_t command_P(const char* cmd, const char* answer, const char* answer2=NULL, uint16_t time=1000);
+
+    static uint8_t command_P(const char* cmd, const char* answer, uint16_t time){
+        return command_P(cmd, answer, NULL, time);
+    }
+
+
+    static uint8_t command_P(const char* cmd){
+        return command_P(cmd, s_ok);
+    }
+
+    static uint8_t command_P(const char* cmd, uint16_t time){
+        return command_P(cmd, s_ok, time);
+    }
+
+    static uint8_t command(char* cmd, const char* answer2=NULL, uint16_t time=1000);
+
+
     static byte sendSMS(const char * phone, const char * text);
     static byte sendUSSD(uint16_t text);
     static char * getRSSI(void);
-    static int balance(void);
+    static int balance(byte n);
     static bool initGPRS();
     static bool setAPN(char*);
     static bool initUDP(uint16_t);
@@ -63,6 +74,7 @@ class GSM: public AltSoftSerial
     static byte lastError;
     static byte isTransparent;
     static byte isActive;
+    static const PROGMEM char s_ok[];
 };
 
 #endif

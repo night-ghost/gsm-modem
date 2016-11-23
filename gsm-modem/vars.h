@@ -15,9 +15,9 @@ struct Params {
 /* 63 END */
 
 } p = { 
-/* 0 */    DATA_PORT, // port
+/* 0 */     DATA_PORT,
 
-/* 46 */    "",  // http:/ykoctpa.ru/map?q=
+/* 46 */    DATA_URL,
 
 /* 57 */    "",  // beeline.internet.ru
 
@@ -30,7 +30,7 @@ struct StrParam {
     byte length;
 };
 
-const StrParam strParam[] = {
+const PROGMEM StrParam strParam[] = {
     { p.url, sizeof(p.url) },
     { p.apn, sizeof(p.apn) },
 };

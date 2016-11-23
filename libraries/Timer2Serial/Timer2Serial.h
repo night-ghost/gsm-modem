@@ -51,6 +51,7 @@ public:
   virtual void flush();
   
   using BetterStream::write;
+  static inline void wait(){}
 
 };
 
