@@ -77,6 +77,8 @@ void init_GSM(){
     // Initializing GSM Module
 debug.println_P(PSTR("Initializing..."));
 
+again:
+
 //      try to Start GSM Module Communication
     if(!gsm.begin() ) {
 	for(int i=0; i<15; i++){ // 9 seconds of flashing
