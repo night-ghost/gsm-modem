@@ -11,3 +11,10 @@ differences:
 * auto-baudrate on FC side
 * it parses stream from FC so knows what happens
 * it connect to server only after receiving of valid MAVlink packet so it not eats money in debugging
+
+Server-side:
+
+mkfifo /tmp/proxypipe
+nc -ukl 8888 0</tmp/proxypipe | nc -ulk 7777 1> /tmp/proxypipe &
+
+when modem connected to 8888, MP can connect to 7777 and listen all data from UAV
