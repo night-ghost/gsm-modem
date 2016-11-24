@@ -37,8 +37,6 @@ namespace CT
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadFromFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.loadDefaultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -46,8 +44,6 @@ namespace CT
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetEepromToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateFirmwareToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.sendTLogToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuComPort = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.gettingStartedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,21 +51,16 @@ namespace CT
             this.tabPageConfig = new System.Windows.Forms.TabPage();
             this.btnSave = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.btnClearSMS = new System.Windows.Forms.Button();
-            this.btnGetSms = new System.Windows.Forms.Button();
-            this.btnSMS = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.btnConn = new System.Windows.Forms.Button();
+            this.txtAPN = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.btnBalance = new System.Windows.Forms.Button();
             this.btnConsole = new System.Windows.Forms.Button();
+            this.txtPort = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.txtURL = new System.Windows.Forms.TextBox();
             this.label20 = new System.Windows.Forms.Label();
-            this.txtPhone4 = new System.Windows.Forms.TextBox();
-            this.label24 = new System.Windows.Forms.Label();
-            this.txtPhone3 = new System.Windows.Forms.TextBox();
-            this.label23 = new System.Windows.Forms.Label();
-            this.txtPhone2 = new System.Windows.Forms.TextBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.txtPhone1 = new System.Windows.Forms.TextBox();
-            this.label21 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.cbxAutoUpdate = new System.Windows.Forms.CheckBox();
@@ -130,8 +121,6 @@ namespace CT
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveToFileToolStripMenuItem,
-            this.loadFromFileToolStripMenuItem,
             this.toolStripSeparator2,
             this.loadDefaultsToolStripMenuItem,
             this.toolStripSeparator1,
@@ -140,46 +129,28 @@ namespace CT
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
-            // saveToFileToolStripMenuItem
-            // 
-            this.saveToFileToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveToFileToolStripMenuItem.Image")));
-            this.saveToFileToolStripMenuItem.Name = "saveToFileToolStripMenuItem";
-            this.saveToFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToFileToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.saveToFileToolStripMenuItem.Text = "Save Config file...";
-            this.saveToFileToolStripMenuItem.Click += new System.EventHandler(this.saveToFileToolStripMenuItem_Click);
-            // 
-            // loadFromFileToolStripMenuItem
-            // 
-            this.loadFromFileToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("loadFromFileToolStripMenuItem.Image")));
-            this.loadFromFileToolStripMenuItem.Name = "loadFromFileToolStripMenuItem";
-            this.loadFromFileToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.loadFromFileToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
-            this.loadFromFileToolStripMenuItem.Text = "Load Config File...";
-            this.loadFromFileToolStripMenuItem.Click += new System.EventHandler(this.loadFromFileToolStripMenuItem_Click);
-            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(210, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(149, 6);
             // 
             // loadDefaultsToolStripMenuItem
             // 
             this.loadDefaultsToolStripMenuItem.Name = "loadDefaultsToolStripMenuItem";
-            this.loadDefaultsToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.loadDefaultsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadDefaultsToolStripMenuItem.Text = "Load Defaults";
             this.loadDefaultsToolStripMenuItem.Click += new System.EventHandler(this.loadDefaultsToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(210, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(213, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -187,9 +158,7 @@ namespace CT
             // 
             this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.resetEepromToolStripMenuItem,
-            this.updateFirmwareToolStripMenuItem,
-            this.sendTLogToolStripMenuItem,
-            this.mnuComPort});
+            this.updateFirmwareToolStripMenuItem});
             this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             this.optionsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.G)));
             this.optionsToolStripMenuItem.ShowShortcutKeys = false;
@@ -199,7 +168,7 @@ namespace CT
             // resetEepromToolStripMenuItem
             // 
             this.resetEepromToolStripMenuItem.Name = "resetEepromToolStripMenuItem";
-            this.resetEepromToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.resetEepromToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.resetEepromToolStripMenuItem.Text = "Reset EEPROM";
             this.resetEepromToolStripMenuItem.ToolTipText = "Initialize EEPROM with default values";
             this.resetEepromToolStripMenuItem.Click += new System.EventHandler(this.BUT_ResetOSD_EEPROM_click);
@@ -207,25 +176,10 @@ namespace CT
             // updateFirmwareToolStripMenuItem
             // 
             this.updateFirmwareToolStripMenuItem.Name = "updateFirmwareToolStripMenuItem";
-            this.updateFirmwareToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
+            this.updateFirmwareToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.updateFirmwareToolStripMenuItem.Text = "Update Firmware...";
             this.updateFirmwareToolStripMenuItem.ToolTipText = "Re-Flash the OSD with a new firmware image";
             this.updateFirmwareToolStripMenuItem.Click += new System.EventHandler(this.updateFirmwareToolStripMenuItem_Click);
-            // 
-            // sendTLogToolStripMenuItem
-            // 
-            this.sendTLogToolStripMenuItem.Name = "sendTLogToolStripMenuItem";
-            this.sendTLogToolStripMenuItem.Size = new System.Drawing.Size(187, 22);
-            this.sendTLogToolStripMenuItem.Text = "Load TLog.";
-            this.sendTLogToolStripMenuItem.ToolTipText = "Load a Mavlink transmission log to play into the OSD to test the layout";
-            this.sendTLogToolStripMenuItem.Click += new System.EventHandler(this.sendTLogToolStripMenuItem_Click);
-            // 
-            // mnuComPort
-            // 
-            this.mnuComPort.Name = "mnuComPort";
-            this.mnuComPort.Size = new System.Drawing.Size(187, 22);
-            this.mnuComPort.Text = "Connect to COM port";
-            this.mnuComPort.Click += new System.EventHandler(this.mnuComPort_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -287,179 +241,127 @@ namespace CT
             // 
             // groupBox8
             // 
-            this.groupBox8.Controls.Add(this.btnClearSMS);
-            this.groupBox8.Controls.Add(this.btnGetSms);
-            this.groupBox8.Controls.Add(this.btnSMS);
+            this.groupBox8.Controls.Add(this.button1);
+            this.groupBox8.Controls.Add(this.btnConn);
+            this.groupBox8.Controls.Add(this.txtAPN);
+            this.groupBox8.Controls.Add(this.label2);
             this.groupBox8.Controls.Add(this.btnBalance);
             this.groupBox8.Controls.Add(this.btnConsole);
+            this.groupBox8.Controls.Add(this.txtPort);
+            this.groupBox8.Controls.Add(this.label1);
             this.groupBox8.Controls.Add(this.txtURL);
             this.groupBox8.Controls.Add(this.label20);
-            this.groupBox8.Controls.Add(this.txtPhone4);
-            this.groupBox8.Controls.Add(this.label24);
-            this.groupBox8.Controls.Add(this.txtPhone3);
-            this.groupBox8.Controls.Add(this.label23);
-            this.groupBox8.Controls.Add(this.txtPhone2);
-            this.groupBox8.Controls.Add(this.label22);
-            this.groupBox8.Controls.Add(this.txtPhone1);
-            this.groupBox8.Controls.Add(this.label21);
             this.groupBox8.Controls.Add(this.label18);
             this.groupBox8.Location = new System.Drawing.Point(5, 5);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(344, 268);
             this.groupBox8.TabIndex = 9;
             this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "SMS";
+            this.groupBox8.Text = "GPRS";
             // 
-            // btnClearSMS
+            // button1
             // 
-            this.btnClearSMS.Location = new System.Drawing.Point(248, 59);
-            this.btnClearSMS.Name = "btnClearSMS";
-            this.btnClearSMS.Size = new System.Drawing.Size(79, 21);
-            this.btnClearSMS.TabIndex = 26;
-            this.btnClearSMS.Text = "Clear SMS";
-            this.btnClearSMS.UseVisualStyleBackColor = true;
-            this.btnClearSMS.Click += new System.EventHandler(this.btnClearSMS_Click);
+            this.button1.Location = new System.Drawing.Point(36, 171);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(143, 21);
+            this.button1.TabIndex = 37;
+            this.button1.Text = "Get balance (101)";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
-            // btnGetSms
+            // btnConn
             // 
-            this.btnGetSms.Location = new System.Drawing.Point(248, 33);
-            this.btnGetSms.Name = "btnGetSms";
-            this.btnGetSms.Size = new System.Drawing.Size(79, 21);
-            this.btnGetSms.TabIndex = 25;
-            this.btnGetSms.Text = "Get SMS";
-            this.btnGetSms.UseVisualStyleBackColor = true;
-            this.btnGetSms.Click += new System.EventHandler(this.btnGetSms_Click);
+            this.btnConn.Location = new System.Drawing.Point(244, 55);
+            this.btnConn.Name = "btnConn";
+            this.btnConn.Size = new System.Drawing.Size(72, 20);
+            this.btnConn.TabIndex = 36;
+            this.btnConn.Text = "Connect";
+            this.btnConn.UseVisualStyleBackColor = true;
+            this.btnConn.Click += new System.EventHandler(this.btnConn_Click);
             // 
-            // btnSMS
+            // txtAPN
             // 
-            this.btnSMS.Location = new System.Drawing.Point(163, 59);
-            this.btnSMS.Name = "btnSMS";
-            this.btnSMS.Size = new System.Drawing.Size(79, 21);
-            this.btnSMS.TabIndex = 17;
-            this.btnSMS.Text = "Send SMS";
-            this.btnSMS.UseVisualStyleBackColor = true;
-            this.btnSMS.Click += new System.EventHandler(this.btnSMS_Click);
+            this.txtAPN.Location = new System.Drawing.Point(16, 102);
+            this.txtAPN.Name = "txtAPN";
+            this.txtAPN.Size = new System.Drawing.Size(146, 20);
+            this.txtAPN.TabIndex = 35;
+            this.hint.SetToolTip(this.txtAPN, "URL of mapping service to send with coordinates");
+            this.txtAPN.Leave += new System.EventHandler(this.txtAPN_Leave);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(23, 86);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(29, 13);
+            this.label2.TabIndex = 34;
+            this.label2.Text = "APN";
             // 
             // btnBalance
             // 
-            this.btnBalance.Location = new System.Drawing.Point(163, 33);
+            this.btnBalance.Location = new System.Drawing.Point(36, 145);
             this.btnBalance.Name = "btnBalance";
-            this.btnBalance.Size = new System.Drawing.Size(79, 21);
-            this.btnBalance.TabIndex = 16;
-            this.btnBalance.Text = "Get balance";
+            this.btnBalance.Size = new System.Drawing.Size(143, 21);
+            this.btnBalance.TabIndex = 30;
+            this.btnBalance.Text = "Get balance (100)";
             this.btnBalance.UseVisualStyleBackColor = true;
             this.btnBalance.Click += new System.EventHandler(this.btnBalance_Click);
             // 
             // btnConsole
             // 
-            this.btnConsole.Location = new System.Drawing.Point(163, 86);
+            this.btnConsole.Location = new System.Drawing.Point(36, 198);
             this.btnConsole.Name = "btnConsole";
             this.btnConsole.Size = new System.Drawing.Size(79, 21);
-            this.btnConsole.TabIndex = 15;
+            this.btnConsole.TabIndex = 29;
             this.btnConsole.Text = "GSM console";
             this.hint.SetToolTip(this.btnConsole, "Connect directly to GSM and open console. Empty string to quit.");
             this.btnConsole.UseVisualStyleBackColor = true;
             this.btnConsole.Click += new System.EventHandler(this.btnConsole_Click);
             // 
+            // txtPort
+            // 
+            this.txtPort.Location = new System.Drawing.Point(173, 55);
+            this.txtPort.Name = "txtPort";
+            this.txtPort.Size = new System.Drawing.Size(42, 20);
+            this.txtPort.TabIndex = 28;
+            this.txtPort.Text = "8888";
+            this.hint.SetToolTip(this.txtPort, "URL of mapping service to send with coordinates");
+            this.txtPort.Leave += new System.EventHandler(this.txtPort_Leave);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(181, 39);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(26, 13);
+            this.label1.TabIndex = 27;
+            this.label1.Text = "Port";
+            // 
             // txtURL
             // 
-            this.txtURL.Location = new System.Drawing.Point(6, 158);
+            this.txtURL.Location = new System.Drawing.Point(16, 55);
             this.txtURL.Name = "txtURL";
             this.txtURL.Size = new System.Drawing.Size(146, 20);
             this.txtURL.TabIndex = 14;
-            this.txtURL.Text = "ykoctpa.ru/map?q=";
             this.hint.SetToolTip(this.txtURL, "URL of mapping service to send with coordinates");
             this.txtURL.Leave += new System.EventHandler(this.txtURL_Leave);
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(28, 142);
+            this.label20.Location = new System.Drawing.Point(23, 39);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(101, 13);
+            this.label20.Size = new System.Drawing.Size(45, 13);
             this.label20.TabIndex = 13;
-            this.label20.Text = "URL of map service";
-            // 
-            // txtPhone4
-            // 
-            this.txtPhone4.Location = new System.Drawing.Point(32, 114);
-            this.txtPhone4.Name = "txtPhone4";
-            this.txtPhone4.Size = new System.Drawing.Size(111, 20);
-            this.txtPhone4.TabIndex = 12;
-            this.hint.SetToolTip(this.txtPhone4, "Phone numbers to send SMS to");
-            this.txtPhone4.Leave += new System.EventHandler(this.txtPhone4_Leave);
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(13, 118);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(13, 13);
-            this.label24.TabIndex = 11;
-            this.label24.Text = "4";
-            // 
-            // txtPhone3
-            // 
-            this.txtPhone3.Location = new System.Drawing.Point(32, 88);
-            this.txtPhone3.Name = "txtPhone3";
-            this.txtPhone3.Size = new System.Drawing.Size(111, 20);
-            this.txtPhone3.TabIndex = 10;
-            this.hint.SetToolTip(this.txtPhone3, "Phone numbers to send SMS to");
-            this.txtPhone3.Leave += new System.EventHandler(this.txtPhone3_Leave);
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(13, 92);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(13, 13);
-            this.label23.TabIndex = 9;
-            this.label23.Text = "3";
-            // 
-            // txtPhone2
-            // 
-            this.txtPhone2.Location = new System.Drawing.Point(32, 62);
-            this.txtPhone2.Name = "txtPhone2";
-            this.txtPhone2.Size = new System.Drawing.Size(111, 20);
-            this.txtPhone2.TabIndex = 8;
-            this.hint.SetToolTip(this.txtPhone2, "Phone numbers to send SMS to");
-            this.txtPhone2.Leave += new System.EventHandler(this.txtPhone2_Leave);
-            // 
-            // label22
-            // 
-            this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(13, 66);
-            this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(13, 13);
-            this.label22.TabIndex = 7;
-            this.label22.Text = "2";
-            // 
-            // txtPhone1
-            // 
-            this.txtPhone1.Location = new System.Drawing.Point(32, 34);
-            this.txtPhone1.Name = "txtPhone1";
-            this.txtPhone1.Size = new System.Drawing.Size(111, 20);
-            this.txtPhone1.TabIndex = 6;
-            this.hint.SetToolTip(this.txtPhone1, "Phone numbers to send SMS to");
-            this.txtPhone1.Leave += new System.EventHandler(this.txtPhone1_Leave);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(13, 38);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(13, 13);
-            this.label21.TabIndex = 5;
-            this.label21.Text = "1";
+            this.label20.Text = "Address";
             // 
             // label18
             // 
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(13, 18);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(119, 13);
+            this.label18.Size = new System.Drawing.Size(0, 13);
             this.label18.TabIndex = 0;
-            this.label18.Text = "Phones to send SMS to";
             // 
             // label5
             // 
@@ -558,8 +460,6 @@ namespace CT
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar1;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveToFileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadFromFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadDefaultsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
@@ -567,40 +467,33 @@ namespace CT
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem resetEepromToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem updateFirmwareToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem sendTLogToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.TabControl PANEL_tabs;
 
         private System.Windows.Forms.TabPage tabPageConfig;
-        private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem gettingStartedToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mnuComPort;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox cbxAutoUpdate;
         private System.Windows.Forms.CheckBox cbxShowUpdateDialog;
-        private System.Windows.Forms.TextBox txtURL;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.TextBox txtPhone4;
-        private System.Windows.Forms.Label label24;
-        private System.Windows.Forms.TextBox txtPhone3;
-        private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.TextBox txtPhone2;
-        private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.TextBox txtPhone1;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Label label18;
         private System.Windows.Forms.ToolTip hint;
-        private System.Windows.Forms.Button btnBalance;
-        private System.Windows.Forms.Button btnConsole;
         private System.Windows.Forms.Button btnConnect;
         private System.Windows.Forms.Button btnDisconnect;
         private System.Windows.Forms.Button btnSave;
-        private System.Windows.Forms.Button btnSMS;
         private System.Windows.Forms.Label lblRel;
-        private System.Windows.Forms.Button btnClearSMS;
-        private System.Windows.Forms.Button btnGetSms;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.TextBox txtAPN;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button btnBalance;
+        private System.Windows.Forms.Button btnConsole;
+        private System.Windows.Forms.TextBox txtPort;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox txtURL;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Button btnConn;
+        private System.Windows.Forms.Button button1;
     }
 	
 }

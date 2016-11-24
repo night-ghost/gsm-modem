@@ -106,8 +106,6 @@ namespace CT {
                 return true;
             } else if (s == "") {
                 return false;
-            } else if (/* Settings.Option.FilterUseCase */ false) {
-                return (s.IndexOf(filterString) != -1);
             } else {
                 string upperString = s.ToUpper();
                 string upperFilter = filterString.ToUpper();

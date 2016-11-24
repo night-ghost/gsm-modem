@@ -82,17 +82,8 @@ namespace CT {
         };
         
    
-        string processingpanel = "";
-        /// <summary>
-        /// use to draw the red outline box is currentlyselected matchs
-        /// </summary>
-        bool selectedrectangle = false;
-        /// <summary>
-        /// use to as a invalidator
-        /// </summary>
-        bool startup = false;
-
-          
+        
+                 
 
         public SerialPort comPort = new SerialPort();
 
@@ -107,15 +98,15 @@ namespace CT {
 
         private bool tlog_run = false;
         public byte[] tlog_data;
-        System.Threading.Thread tlog_thread;
+        
         public System.Threading.Thread com_thread;
 
         public bool comBusy=false;
         public bool com_run=false;
 
-        string CurrentCOM;
+        
 
-        const int PARAMS_END=30; // количество целых параметров
+        const int PARAMS_END=1; // количество целых параметров
 
         public CTool() {
            
@@ -128,7 +119,7 @@ namespace CT {
 
         //Set item boxes
         void setupFunctions() {
-            processingpanel = "";
+            
 
             com_thread = new System.Threading.Thread(com_thread_proc);
             com_thread.Start();
@@ -362,241 +353,9 @@ namespace CT {
             }
         }
 
-        private Boolean updatingRSSI = false;
+       
 
-        private void loadFromFileToolStripMenuItem_Click(object sender, EventArgs e) {
-            OpenFileDialog ofd = new OpenFileDialog() { Filter = "*.osd|*.osd" };
-            //const int nosdfunctions = 29;
-            ofd.ShowDialog();
-
-            startup = true;
-
-            string[] strings = { "" };
-
-            if (ofd.FileName != "") {
-                try {
-/*
-                    using (StreamReader sr = new StreamReader(ofd.OpenFile())) {
-                        while (!sr.EndOfStream) {
-                            //Panel 1
-                            //string stringh = sr.ReadLine(); //
-                            string[] hdr = sr.ReadLine().Split(new char[] { '\x20' }, StringSplitOptions.RemoveEmptyEntries);
-                            int k = 0;
-
-                            if (hdr[0] != "Panel")
-                                break;
-
-                            k = int.Parse(hdr[1]);
-   
-                            for (int i = 0; i < osd_functions_N; i++) {
-                                strings = sr.ReadLine().Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-                                for (int a = 0; a < scr[k].panelItems.Length; a++) {
-                                    if (this.scr[k].panelItems[a] != null && scr[k].panelItems[a].name == strings[0]) {
-                                        var pi = scr[k].panelItems[a];
-                                        // incase there is an invalid line number or to shore
-                                        try {
-                                            //scr[k].panelItems[a] = new Panel(pi.name, pi.show, int.Parse(strings[1]), int.Parse(strings[2]), pi.pos);
-                                            pi.x = int.Parse(strings[1]);
-                                            pi.y = int.Parse(strings[2]);
-                                            try {
-                                                pi.sign = int.Parse(strings[4]);
-                                            } catch { }
-
-                                            TreeNode[] tnArray = scr[k].LIST_items.Nodes.Find(scr[k].panelItems[a].name, true);
-                                            if (tnArray.Length > 0)
-                                                tnArray[0].Checked = (strings[3] == "True");
-                                        } catch {
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        //                        stringh = sr.ReadLine(); //config
-                        while (!sr.EndOfStream) {
-                            strings = sr.ReadLine().Split(new char[] { '\t' }, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (strings[0] == "Units")
-                                try {
-                                    pan.converts = byte.Parse(strings[1]) != 0;
-                                } catch {
-                                    pan.converts = bool.Parse(strings[1]);
-                                } else if (strings[0] == "Overspeed")
-                                pan.overspeed = byte.Parse(strings[1]);
-                            else if (strings[0] == "Stall") pan.stall = byte.Parse(strings[1]);
-                            else if (strings[0] == "Battery") pan.battv = byte.Parse(strings[1]);
-                            else if (strings[0] == "RSSI High")
-                                pan.rssical = (UInt16)(int.Parse(strings[1]));
-                            else if (strings[0] == "RSSI Low")
-                                pan.rssipersent = (UInt16)(int.Parse(strings[1]));
-                            else if (strings[0] == "RSSI Enable Raw") pan.rssiraw_on = byte.Parse(strings[1]);
-                            else if (strings[0] == "Toggle Channel") pan.ch_toggle = byte.Parse(strings[1]);
-                            else if (strings[0] == "Auto Screen Switch") pan.auto_screen_switch = byte.Parse(strings[1]);
-                            else if (strings[0] == "Chanel Rotation Switching") pan.switch_mode = byte.Parse(strings[1]);
-                            else if (strings[0] == "Video Mode")
-                                try {
-                                    pan.pal_ntsc = byte.Parse(strings[1]) != 0;
-                                } catch {
-                                    pan.pal_ntsc = bool.Parse(strings[1]);
-                                }
-                                //sw.WriteLine("{0}\t{1}", "Auto Mode", pan.mode_auto);
-                            else if (strings[0] == "Auto Mode")
-                                try {
-                                    pan.mode_auto = byte.Parse(strings[1]) != 0;
-                                } catch {
-                                    pan.mode_auto = bool.Parse(strings[1]);
-                                } else if (strings[0] == "Battery Warning Level") pan.batt_warn_level = byte.Parse(strings[1]);
-                            else if (strings[0] == "RSSI Warning Level") pan.rssi_warn_level = byte.Parse(strings[1]);
-                            else if (strings[0] == "OSD Brightness") pan.osd_brightness = byte.Parse(strings[1]);
-                            else if (strings[0] == "Call Sign") pan.callsign_str = strings[1];
-                            else if (strings[0] == "Model Type") cbxModelType.SelectedItem = (ModelType)(pan.model_type = byte.Parse(strings[1])); //we're not overwriting "eeprom" model type
-                            //                            else if (strings[0] == "Sign Air Speed") pan.sign_air_speed = byte.Parse(strings[1]);
-                            //                            else if (strings[0] == "Sign Ground  Speed") pan.sign_ground_speed = byte.Parse(strings[1]);
-                            //                            else if (strings[0] == "Sign Home Altitude") pan.sign_home_altitude = byte.Parse(strings[1]);
-                            //                            else if (strings[0] == "Sign MSL Altitude") pan.sign_msl_altitude = byte.Parse(strings[1]);
-                            else if (strings[0] == "BattB") pan.battBv = byte.Parse(strings[1]);
-                            else if (strings[0] == "rssi_k") pan.rssi_koef = float.Parse(strings[1]);
-                            else if (strings[0] == "curr_k") pan.Curr_koef = float.Parse(strings[1]);
-                            else if (strings[0] == "batt_a_k") pan.battA_koef = float.Parse(strings[1]);
-                            else if (strings[0] == "batt_b_k") pan.battB_koef = float.Parse(strings[1]);
-                            else if (strings[0] == "roll_k") pan.roll_k = float.Parse(strings[1]);
-                            else if (strings[0] == "pitch_k") pan.pitch_k = float.Parse(strings[1]);
-                            else if (strings[0] == "roll_kn") pan.roll_k_ntsc = float.Parse(strings[1]);
-                            else if (strings[0] == "pitch_kn") pan.pitch_k_ntsc = float.Parse(strings[1]);
-                            else if (strings[0] == "fBattA") pan.flgBattA = bool.Parse(strings[1]);
-                            else if (strings[0] == "fBattB") pan.flgBattB = bool.Parse(strings[1]);
-                            else if (strings[0] == "fCurr") pan.flgCurrent = bool.Parse(strings[1]);
-                            else if (strings[0] == "fRadar") pan.flgRadar = bool.Parse(strings[1]);
-                            else if (strings[0] == "fILS") pan.flgILS = bool.Parse(strings[1]);
-                            else if (strings[0] == "HOS") pan.horiz_offs = (byte)int.Parse(strings[1]);
-                            else if (strings[0] == "VOS") pan.vert_offs = (byte)int.Parse(strings[1]);
-                            else if (strings[0] == "PWMSRC") pan.pwm_src = (byte)int.Parse(strings[1]);
-                            else if (strings[0] == "PWMDST") pan.pwm_dst = (byte)int.Parse(strings[1]);
-                            else if (strings[0] == "NSCREENS") pan.n_screens = (byte)int.Parse(strings[1]);
-                            else if (strings[0] == "flgHUD") pan.flgHUD = bool.Parse(strings[1]);
-                            else if (strings[0] == "flgTrack") pan.flgTrack = bool.Parse(strings[1]);
-                        }
-
-
-
-                        //pan.model_type = (byte)cbxModelType.SelectedItem;
-
-                        //Modify units
-                        if (!pan.converts) {
-                            UNITS_combo.SelectedIndex = 0; //metric
-                            STALL_label.Text = cbxModelType.SelectedItem.ToString() == "Copter" ? "Max VS (m/min) / 10" : "Stall Speed (km/h)";
-                            OVERSPEED_label.Text = "Overspeed (km/h)";
-                        } else {
-                            UNITS_combo.SelectedIndex = 1; //imperial
-                            STALL_label.Text = cbxModelType.SelectedItem.ToString() == "Copter" ? "Max VS (ft/min) / 10" : "Stall Speed (mph)";
-                            OVERSPEED_label.Text = "Overspeed (mph)";
-                        }
-
-                        OVERSPEED_numeric.Value = pan.overspeed;
-                        STALL_numeric.Value = pan.stall;
-                        MINVOLT_numeric.Value = Convert.ToDecimal(pan.battv) / Convert.ToDecimal(10.0);
-
-                        //RSSI_numeric_max.Value = pan.rssical;
-                        //RSSI_numeric_min.Value = pan.rssipersent;
-
-                        updatingRSSI = true;
-                        RSSI_numeric_min.Minimum = 0;
-                        RSSI_numeric_min.Maximum = 2047;
-                        RSSI_numeric_max.Minimum = 0;
-                        RSSI_numeric_max.Maximum = 2047;
-                        RSSI_numeric_min.Value = 0;
-                        RSSI_numeric_max.Value = 0;
-                        RSSI_RAW.Checked = Convert.ToBoolean(pan.rssiraw_on % 2);
-                        if ((int)(pan.rssiraw_on / 2) == 0 || pan.rssiraw_on / 2 == 1){ // analog 
-                          } else { // pwm 
- 
-                        }
-
-                        try {
-                            RSSI_numeric_min.Value = pan.rssipersent;
-                        } catch {
-                            RSSI_numeric_min.Value = RSSI_numeric_min.Minimum;
-                        }
-                        try {
-                            RSSI_numeric_max.Value = pan.rssical;
-                        } catch {
-                            RSSI_numeric_max.Value = RSSI_numeric_max.Minimum;
-                        }
-
-                        cbxRSSIChannel.SelectedIndex = rssi_decode(pan.rssiraw_on);
-
-                        if (pan.ch_toggle >= toggle_offset && pan.ch_toggle < 9) ONOFF_combo.SelectedIndex = pan.ch_toggle - toggle_offset;
-                        else ONOFF_combo.SelectedIndex = 0; //reject garbage from the red file
-
-                        cbxWarningsAutoPanelSwitch.SelectedItem = (PanelsAutoSwitch)pan.auto_screen_switch;
-                        TOGGLE_BEH.Checked = Convert.ToBoolean(pan.switch_mode);
-
-                        CHK_pal.Checked = Convert.ToBoolean(pan.pal_ntsc);
-                        CHK_auto.Checked = Convert.ToBoolean(pan.mode_auto);
-
-                        chkHUD.Checked = Convert.ToBoolean(pan.flgHUD);
-                        chkTrack.Checked = Convert.ToBoolean(pan.flgTrack);
-
-                        BATT_WARNnumeric.Value = pan.batt_warn_level;
-                        RSSI_WARNnumeric.Value = pan.rssi_warn_level;
-
-                        BRIGHTNESScomboBox.SelectedIndex = pan.osd_brightness;
-
-                        try {
-                            numHOS.Value = pan.horiz_offs - 0x20;
-                            numVOS.Value = pan.vert_offs - 0x10;
-                        } catch {
-                            pan.horiz_offs = (byte)numHOS.Value;
-                            pan.vert_offs = (byte)numVOS.Value;
-                        }
-
-                        txtCallSign.Text = pan.callsign_str;
-
-                        //                        cbxAirSpeedSign.Checked = pan.sign_air_speed!=0;
-                        //                        cbxGroundSpeedSign.Checked = pan.sign_ground_speed!=0;
-                        //                        cbxHomeAltitudeSign.Checked = pan.sign_home_altitude!=0 ;
-                        //                        cbxMslAltitudeSign.Checked = pan.sign_msl_altitude!=0 ;
-
-                        this.CHK_pal_CheckedChanged(EventArgs.Empty, EventArgs.Empty);
-                        this.pALToolStripMenuItem_CheckStateChanged(EventArgs.Empty, EventArgs.Empty);
-                        this.nTSCToolStripMenuItem_CheckStateChanged(EventArgs.Empty, EventArgs.Empty);
-                        // new!
-                        numMinVoltB.Text = (pan.battBv / 10.0).ToString();
-                        txtRSSI_k.Text = pan.rssi_koef.ToString();
-                        txtCurr_k.Text = pan.Curr_koef.ToString();
-                        txtBattA_k.Text = pan.battA_koef.ToString();
-                        txtBattB_k.Text = pan.battB_koef.ToString();
-                        txtRollPal.Text = pan.roll_k.ToString();
-                        txtPitchPal.Text = pan.pitch_k.ToString();
-                        txtRollNtsc.Text = pan.roll_k_ntsc.ToString();
-                        txtPitchNtsc.Text = pan.pitch_k_ntsc.ToString();
-
-
-                        cbBattA_source.SelectedIndex = pan.flgBattA ? 1 : 0;
-                        cbCurrentSoure.SelectedIndex = pan.flgCurrent ? 1 : 0;
-
-                        chkRadar.Checked = pan.flgRadar;
-                        chkILS.Checked = pan.flgILS;
-
-                        try {
-                            cbOutSource.SelectedIndex = pan.pwm_src;
-                            cbOutPin.SelectedIndex = pan.pwm_dst;
-                        } catch (Exception ex) { }
-
-                        try {
-                            cbNscreens.SelectedIndex = pan.n_screens - 1;
-                        } catch (Exception ex) { }
-
-                    }
- */ 
-                } catch (Exception ex) {
-                    MessageBox.Show("Error Reading file at " + ex.Message + " str=" + strings[0] + " val=" + strings[1]);
-                } finally {
-                    updatingRSSI = false;
-                }
-            }
-            startup = false;
-           
-        }
+        
 
         private void loadDefaultsToolStripMenuItem_Click(object sender, EventArgs e) {
             setupFunctions();
@@ -709,10 +468,7 @@ namespace CT {
 
             System.Threading.Thread.Sleep(50);
 
-            if (tlog_run)
-                tlog_thread.Abort();
-
-
+           
             try {
                 com_thread.Abort ();
             } catch{}
@@ -722,9 +478,6 @@ namespace CT {
             xmlconfig(true);
         }
 
-        private String arduinoIDEPath = "Arduino-1.6.5";
-        private String planeSketchPath = "ArduCAM_OSD";
-        private String copterSketchPath = "ArduCAM_OSD";
         private bool autoUpdate = false;
         private bool checkForUpdates = true;
 
@@ -798,9 +551,7 @@ namespace CT {
             toolStripProgressBar1.Style = ProgressBarStyle.Continuous;
             toolStripStatusLabel1.Text = "";
 
-            if (tlog_run)
-                tlog_thread.Abort();
-
+           
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "mcm|*.mcm";
 
@@ -1010,9 +761,7 @@ namespace CT {
             if (string.IsNullOrEmpty(fileName))
                 return false;
 
-            if (tlog_run)
-                tlog_thread.Abort();
-
+            
             byte[] FLASH;
             bool spuploadflash_flag = false;
             try {
@@ -1492,8 +1241,8 @@ namespace CT {
         }
 
         private void parseInput(string s) {
-            Console.WriteLine(delCr(s));
-        
+            Console.WriteLine("<" + delCr(s));
+       
         }
 
         private void   getConfig(bool fWaitHeader=true)    {
@@ -1502,7 +1251,7 @@ namespace CT {
 
             if(fWaitHeader){
                 try {
-    again:
+    again:                    
                     parseInput(s);
                     if(!waitComAnswer("Error getting config - No Data")){
                         EnableControls(false);
@@ -1511,13 +1260,15 @@ namespace CT {
                     }
 
                     //
-                    if (!waitComAnswer("timeout"))
+                    if (!waitComAnswer("timeout")) {
+                        Console.WriteLine("timeout!" );
                         return ;
+                    }
                     s = comPort.ReadLine();
+                    parseInput(s);
                     if(s=="" || s=="\r") goto again;
                     if (s[0] == '#') goto again;
-
-                    if (!s.Contains("[CONFIG]")) {
+                     if (!s.Contains("[CONFIG]")) {
                         MessageBox.Show("Error getting config - invalid data: " + s);
                         
                         EnableControls(false);
@@ -1526,6 +1277,7 @@ namespace CT {
                     }
 
                 } catch{
+                    Console.WriteLine("exception!");
                     EnableControls(false);
                     comBusy = false;
                     return;
@@ -1537,8 +1289,8 @@ namespace CT {
                     return;
                 }
                 s = comPort.ReadLine();
-                if (s[0] == '#') {
-                    parseInput(s);
+                parseInput(s);
+                if (s[0] == '#') {                    
                     continue;
                 }
 
@@ -1552,7 +1304,7 @@ namespace CT {
 
         }
 
-        private bool waitComAnswer(string error){
+        private bool waitComAnswer(string error, int to=6){
             int timeout=0;
             try {
                 while (comPort.BytesToRead == 0) {
@@ -1561,7 +1313,7 @@ namespace CT {
                     timeout++;
                     Application.DoEvents();
 
-                    if (timeout > 60) {
+                    if (timeout > to*10) {
                         MessageBox.Show(error);
 
                         return false;
@@ -1574,14 +1326,19 @@ namespace CT {
         }
 
         string readBeaconLine(){
-            string s;
+            string s="";
             while (true) {
                 if (!waitComAnswer("timeout"))
                     return "";
-                s = delCr(comPort.ReadLine());
+                try {
+                    s = delCr(comPort.ReadLine());
+                } catch{
+                    return s;
+                }
+                parseInput(s);
+
                 if(s=="") continue;
                 if (s[0] == '#') {// skip debug messages
-                    parseInput(s);
                     continue;
                 }
                 if (s == "[CONFIG]") { //  вместо ожидаемого результата пришел полный конфиг
@@ -1606,25 +1363,27 @@ namespace CT {
                 comPort.PortName = CMB_ComPort.Text;
                 comPort.BaudRate = 57600;
 
-                comPort.ReadTimeout =1000; // 1s
+                comPort.ReadTimeout =5000; // 5s
 
                 comBusy = true;
                 comPort.Open();
+
+                while (comPort.BytesToRead != 0)
+                    parseInput(comPort.ReadExisting());
+
 
                 comPort.DtrEnable = false;
                 comPort.RtsEnable = false;
 
                 System.Threading.Thread.Sleep(50);
+                Application.DoEvents();
 
                 comPort.DtrEnable = true;
                 comPort.RtsEnable = true;
+                            
+                
 
-                System.Threading.Thread.Sleep(100);
-                Application.DoEvents();
-
-                while (comPort.BytesToRead != 0)
-                    parseInput(comPort.ReadExisting());
-
+               
                 
                 string s;
                 if(!waitComAnswer("Error connecting to modem - No Data")) {
@@ -1637,21 +1396,25 @@ namespace CT {
                
                 while(true) {
                     s = comPort.ReadLine();
-                    if(s[0]!='#') break;    // skip debug messages
+                    if (s.Length == 0) continue; 
+                    if (s.Length == 1 && s[0] == '\r') continue; 
+
+                    if(s[0]!='#') break;    // skip debug messages                    
                     parseInput(s);
                 }
-                if (!s.Contains("gsm-modem")) {
+                string patt="gsm-modem";
+                if (!s.Contains(patt)) {
                     MessageBox.Show("Error connecting to modem - invalid data: " +s );
                     comPort.Close();
                     comBusy = false;
                     btnConnect.Enabled = true;
                     return;
                 }
-                string rel=s.Substring(7);
+                string rel=s.Substring(patt.Length+1);
                 lblRel.Text ="Release: " + rel;
 
-            } catch { 
-                MessageBox.Show("Error opening com port", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } catch (Exception ex) { 
+                MessageBox.Show("Error opening com port err="+ex.Message , "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 comBusy = false;
                 btnConnect.Enabled = true;
                 return; 
@@ -1746,8 +1509,27 @@ namespace CT {
 
         private void btnBalance_Click(object sender, EventArgs e) {
             beaconCommand('m');
-            if (waitComAnswer("Timeout to get"))
-                MessageBox.Show("Balance: " + readBeaconLine(), "Balance", MessageBoxButtons.OK, MessageBoxIcon.Information); 
+            if (waitComAnswer("Timeout to get",60)){
+                string s;
+                do {
+                    s =readBeaconLine();
+                    parseInput(s);
+                } while(s.Length ==0 || s[0]=='#');
+                MessageBox.Show("Balance: " + s, "Balance", MessageBoxButtons.OK, MessageBoxIcon.Information); 
+            }
+        }
+
+        private void button1_Click_1(object sender, EventArgs e) {
+            beaconCommand('n');
+            if (waitComAnswer("Timeout to get", 60)) {
+                string s;
+                do {
+                    s = readBeaconLine();
+                    parseInput(s);
+                } while (s.Length == 0 || s[0] == '#');
+                MessageBox.Show("Balance: " + s, "Balance", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
         }
 
         private void btnSay_Click(object sender, EventArgs e) {
@@ -1879,10 +1661,10 @@ namespace CT {
 
 
 
-        private void parseParam(string s) {
+        private void parseParam(string s,bool write=false) {
             if(s=="") return;
-            if(s=="cBeacon") return;
-            //if(s=="[CONFIG]") return;
+            if(s=="gsm-modem") return;
+            if(s=="[CONFIG]") return;
             if(s[0] == '#') {parseInput (s); return;}
             if (s == ">") return;
             
@@ -1901,42 +1683,27 @@ namespace CT {
             }
             string v=delCr(sa[1]);
 
+            if(write){
+                return;
+            }
+
             fReenter = true;
 
             TextBox tbx = this.Controls.Find("txtParam" + reg.ToString(), true).FirstOrDefault() as TextBox;
             if (tbx == null) {                
                 switch(reg){
-                case 16:    // no SearchGPS_time
-                    break;
-
-
-  
-
-                 
-                case 21:    // no HighSavePower
-                    break;
-
-                case 26:    // call sign as string
-                case 27:    // call sign as string
+                case 0:
+                    txtPort.Text = v;
                     break;
 
             // strings
                 case PARAMS_END+0:    
-                    txtPhone1.Text = v;
-                    break;
-                case PARAMS_END+1:
-                    txtPhone2.Text = v;
-                    break;
-                case PARAMS_END+2:
-                    txtPhone3.Text = v;
-                    break;
-                case PARAMS_END+3:
-                    txtPhone4.Text = v;
-                    break;
-
-                case PARAMS_END+5:
                     txtURL.Text = v;
                     break;
+                case PARAMS_END+1:
+                    txtAPN.Text = v;
+                    break;
+                
 
                 default:
                     Console.WriteLine("Error searhing textbox n=" + reg.ToString());
@@ -1972,50 +1739,36 @@ namespace CT {
             string s="";
 
             if(fReenter) return;
-
+            fReenter=true;
             TextBox tbx = this.Controls.Find("txtParam" + n, true).FirstOrDefault() as TextBox;
             if (tbx == null) {
                 switch(n){
-                case 10:  // no GPS format
-                case 16:    // no SearchGPS_time
-                case 21:    // no HighSavePower
-                case 26:    // call sign as string
-                case 27:    // call sign as string
-                    return;
-
-
+                case 0:
+                    s = txtPort.Text;
+                    val=int.Parse(s);
+                    goto as_number;
                     
- 
-                     
-
             // strings
                 case PARAMS_END+0:    
-                    s=txtPhone1.Text;
+                    s=txtURL.Text;
                     break;
                 case PARAMS_END + 1:
-                    s = txtPhone2.Text;
+                    s = txtAPN.Text;
                     break;
-                case PARAMS_END + 2:
-                    s = txtPhone3.Text;
-                    break;
-                case PARAMS_END + 3:
-                    s = txtPhone4.Text;
-                    break;
-
- 
-                case PARAMS_END + 5:
-                    s = txtURL.Text ;
-                    break;
+                
 
                 default:
                     Console.WriteLine("Send Error searhing textbox n=" + n.ToString());
+                    fReenter=false;
                     return;
                 }
                 readOut ();
                 comBusy = true;
                 comPort.WriteLine(String.Format("S{0}={1}", n, s));
+                Console.WriteLine(String.Format(">S{0}={1}", n, s));
                 //parseParam(readBeaconLine());
                 getConfig(); // full config here
+                fReenter=false;
                 return;
             
             }
@@ -2024,9 +1777,15 @@ namespace CT {
 as_number:
             readOut();
             comBusy=true ;
-            comPort.WriteLine(String.Format("R{0}={1}",n,val));
-            //parseParam(readBeaconLine());
-            getConfig(); // full config here
+            try {
+                comPort.WriteLine(String.Format("R{0}={1}",n,val));
+                Console.WriteLine(String.Format(">R{0}={1}", n, val));
+            
+                getConfig(); // full config here
+            } catch{
+                return;
+            }
+            fReenter = false;
             return;
 
 
@@ -2057,58 +1816,28 @@ as_number:
  
         }
 
+        private void btnConn_Click(object sender, EventArgs e) {
+            beaconCommand('c');
+        }
+
         private void txtParam0_Leave(object sender, EventArgs e) {
             string name = ((TextBox)sender).Name.Substring ("txtParam".Length );
             int n = int.Parse(name);
             sendParam(n);
         }
 
-        private void txtParam19a_Leave(object sender, EventArgs e) {
-            sendParam(19);
+
+        private void txtPort_Leave(object sender, EventArgs e) {
+            sendParam(0);
         }
 
-        private void txtParam19b_Leave(object sender, EventArgs e) {
-            sendParam(19);
-        }
 
-        private void txtPhone1_Leave(object sender, EventArgs e) {
+        private void txtURL_Leave(object sender, EventArgs e) {
             sendParam(PARAMS_END + 0);
         }
 
-        private void txtPhone2_Leave(object sender, EventArgs e) {
+        private void txtAPN_Leave(object sender, EventArgs e) {
             sendParam(PARAMS_END + 1);
-        }
-
-        private void txtPhone3_Leave(object sender, EventArgs e) {
-            sendParam(PARAMS_END + 2);
-        }
-
-        private void txtPhone4_Leave(object sender, EventArgs e) {
-            sendParam(PARAMS_END + 3);
-        }
-
-        private void txtURL_Leave(object sender, EventArgs e) {
-            sendParam(PARAMS_END + 5);
-        }
-
-        private void txtCallSign_Leave(object sender, EventArgs e) {
-            sendParam(PARAMS_END+4);
-        }
-
-        private void chkParam17_Leave(object sender, EventArgs e) {
-            sendParam (17);
-        }
-
-        private void chkParam18_Leave(object sender, EventArgs e) {
-            sendParam(18);
-        }
-
-        private void txtParam29a_Leave(object sender, EventArgs e) {
-            sendParam(29);
-        }
-
-        private void txtParam29b_Leave(object sender, EventArgs e) {
-            sendParam(29);
         }
 
         private void button1_Click(object sender, EventArgs e) {
@@ -2210,6 +1939,18 @@ as_number:
             
 
         }
+
+      
+
+        
+
+       
+
+       
+
+
+      
+
 
     
 

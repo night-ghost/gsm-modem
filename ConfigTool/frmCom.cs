@@ -82,7 +82,7 @@ namespace CT {
                 if(parent.comPort.IsOpen && comPort.IsOpen) {
                     loop=true;
                     int np=0;
-                    string message;
+                    
 
                     while(loop){
                         while (parent.comPort.BytesToRead != 0)
