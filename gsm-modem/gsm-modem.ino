@@ -102,11 +102,11 @@ debug.println_P(PSTR("SIM800 Ready & Loading"));
 debug.println_P(PSTR("Registered: Starting Configuration"));
 
 
-    gsm.initGPRS();
+    if(!gsm.initGPRS()) goto again;
 
 //    delay(2000);
 
-    gsm.setAPN(p.apn);
+    if(!gsm.setAPN(p.apn)) goto again;
 
 debug.println_P(PSTR("APN Set"));
 

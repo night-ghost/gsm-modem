@@ -50,6 +50,7 @@ char GSM::GSM_response[RESPONCE_LENGTH];
 byte GSM::lastError=0;
 byte GSM::isTransparent=0;
 byte GSM::isActive=0;
+byte GSM::isGPRS=0;
 
 static const char PROGMEM s_cpin_q[]="+CPIN?";
 static const char PROGMEM s_creg_q[]="+CREG?";
@@ -301,7 +302,7 @@ uint8_t GSM::command_P(const char* cmd, const char* answer, const char* answer2,
     readOut();
 
 #ifdef GSM_DEBUG
-debug.printf_P(PSTR("# want: %S\n"),answer);
+debug.printf_P(PSTR("# want: %S or %S\n"),answer,answer2);
 debug.print_P(PSTR("#> AT"));
 debug.println_P(cmd);
 #endif
@@ -313,12 +314,12 @@ debug.println_P(cmd);
 }
 
 // 
-static uint8_t command(char* cmd, const char* answer2=NULL, uint16_t time=1000){
+uint8_t GSM::command(char* cmd, const char* answer2, uint16_t time){
 
     readOut();
 
 #ifdef GSM_DEBUG
-debug.printf_P(PSTR("# want: %S\n"),answer);
+debug.printf_P(PSTR("# want: OK or %S\n"),answer2);
 debug.print_P(PSTR("#> AT"));
 debug.println_P(cmd);
 #endif
@@ -706,11 +707,12 @@ bool GSM::initGPRS(){
 	command_P(PSTR("+CSMINS=1")) && // enable SIM status report
 	command_P(PSTR("+CSCLK=0")) && // disable slow clock
 	command_P(PSTR("+CIURC=1")) && // enable URC presentation
-	command_P(PSTR("+CGEREP=2"))&& // GPRS error reporting: 0 disable, 1 enable
+	command_P(PSTR("+CGEREP=1"))&& // GPRS error reporting: 0 disable, 1 enable
 	command_P(PSTR("+CIPMUX=0"))&& // Single channel communication (ie only one socket can be opened)
 	command_P(PSTR("+CIPMODE=1"))&& // Transparent bridge mode
 //(NmRetry:3-8),(WaitTm:2-10),(SendSz:1-1460),(esc:0,1) ,(Rxmode:0,1), (RxSize:50-1460),(Rxtimer:20-1000
-	command_P(PSTR("+CIPCCFG=8,10,300,0,0,460,50"));  // GPRS params
+	command_P(PSTR("+CIPCCFG=8,10,300,0,0,460,50")) &&  // GPRS params
+	command_P(PSTR("+CGATT=1"),750); // Attach GPRS - 75s
 	//                 mode,subset,portspeed(4->57600),frame size, ack time,
 //	command_P(PSTR("+CMUX=0,0,4,32768,10,3,30,10,2")); // GPRS/IP params
 
@@ -722,15 +724,24 @@ bool GSM::initGPRS(){
 bool GSM::setAPN(char *apn) {
     bool f;
     char str[80];
+    static const PROGMEM char patt[]="CGATT:";
 
-    f= command_P(PSTR("+CGATT?"),s_ok,PSTR("CGATT: 1"),600); // Make sure GPRS is Attached, 60s
+    if(command_P(PSTR("+CGATT?"),s_ok,patt,600) ){ // Make sure GPRS is Attached, 60s
+        char *cp=result2_ptr + sizeof(patt);
+        while(*cp){
+            if(*cp!=' ') break;
+            cp++;
+        }
+        byte v=(byte)atol(cp);
+        isGPRS = (v!=0);
+    }
 
-    if(!f) return f;
+    //if(!f) return f;
 
 
 //AT+SAPBR=3,1,"APN","internet.tele2.ru"
     bs.begin(str);
-    bs.print_P(PSTR("+SAPBR=3,1,"APN",\""));
+    bs.print_P(PSTR("+SAPBR=3,1,\"APN\",\""));
     bs.print(apn);
     bs.print_P(PSTR("\""));
 

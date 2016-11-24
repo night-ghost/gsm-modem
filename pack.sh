@@ -7,7 +7,7 @@ version(){
 RELEASE='Released/FW'
 BUILD='gsm-modem/build-atmega328'
 
-#[ -f $BUILD/gsm-modem.hex ] && mv $BUILD/gsm-modem.hex $RELEASE/gsm-modem.`version`-release.hex
+[ -f $BUILD/gsm-modem.hex ] && mv $BUILD/gsm-modem.hex $RELEASE/gsm-modem.`version`-release.hex
 
 rm -rf $BUILD
 rm -f latest.zip

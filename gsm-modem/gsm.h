@@ -75,6 +75,8 @@ class GSM: public AltSoftSerial
     static byte isTransparent;
     static byte isActive;
     static const PROGMEM char s_ok[];
+    
+    static byte isGPRS;
 };
 
 #endif
