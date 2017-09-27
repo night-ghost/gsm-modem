@@ -1,1 +1,1 @@
-#define RELEASE_NUM 0.03
+#define RELEASE_NUM 0.04

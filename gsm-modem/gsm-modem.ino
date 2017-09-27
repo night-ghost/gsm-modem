@@ -322,8 +322,10 @@ void setup()
     pinMode(RED_LED, OUTPUT); // Warning LED
     Green_LED_OFF;		 // Set All Good LED to Off
     Red_LED_ON; 
+#ifdef resetPin
     digitalWrite(resetPin, HIGH); // Set Reset Pin
     pinMode(resetPin, OUTPUT);
+#endif
 
     gsm.initGSM();  // настроить ноги к GSM модулю
     

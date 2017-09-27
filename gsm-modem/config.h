@@ -1,4 +1,11 @@
 
+/*
+    board type
+    0 - arduino pro mini + Sim800
+    1 - CoolBeacon board 
+*/
+#define HARDWARE_TYPE 1
+
 #define DEBUG
 
 #define TELEMETRY_SPEED 57600
@@ -8,20 +15,48 @@
 
 #define USE_GPRS 1
 
-#define GREEN_LED 12 // All Good LED Turns green when data is being sent over UDP Connection
-#define RED_LED 13   // Error LED Turns Red when error is encountered, turns off if all is okay
 
-#define resetPin 3 // Set reset pin
+#if HARDWARE_TYPE==0 // Arduino
+
+ #define GREEN_LED 12 // All Good LED Turns green when data is being sent over UDP Connection
+ #define RED_LED 13   // Error LED Turns Red when error is encountered, turns off if all is okay
+
+ #define resetPin 3 // Set reset pin
 
 
 // --------- GSM section
 
-#define GSM_DTR  3
-//#define GSM_RING 7
-#define GSM_RX   8
-#define GSM_TX   9
-#define GSM_EN   17
+ #define GSM_DTR  3
+ //#define GSM_RING 7
+ #define GSM_RX   8
+ #define GSM_TX   9
+ #define GSM_EN   17
 //#define GSM_INT  PD3 // pin 1
+
+ #define DEBUG_TX_PIN 13 // нога вывода отладки
+
+#elif HARDWARE_TYPE==1 // CoolBeacon board
+
+ #define GREEN_LED 7 // All Good LED Turns green when data is being sent over UDP Connection
+ #define RED_LED 5   // Error LED Turns Red when error is encountered, turns off if all is okay
+
+// #define resetPin 3 // Set reset pin
+
+
+// --------- GSM section
+ #define GSM_DTR  6  // PD6
+ #define GSM_RING A2  
+ #define GSM_RX   8  // PB0
+ #define GSM_TX   9  // PB1
+ #define GSM_EN   10 // PB2
+
+ #define DEBUG_TX_PIN 4 // PD4 нога вывода отладки
+
+
+#else
+    #error "Bad Hardware Type"
+#endif
+
 
 #define GSM_SPEED 57600  //38400// 9600 // 19200 //
 
@@ -30,7 +65,6 @@
 
 
 #define DEBUG_SPEED 57600
-#define DEBUG_TX_PIN 13 // нога вывода отладки
 
 #ifdef DEBUG
   #define DBG_PRINTLN(x)     { { debug.print_P(PSTR(x)); debug.println();  debug.wait();  } }
