@@ -4,7 +4,7 @@
     0 - arduino pro mini + Sim800
     1 - CoolBeacon board 
 */
-#define HARDWARE_TYPE 1
+#define HARDWARE_TYPE 0
 
 #define DEBUG
 
@@ -19,7 +19,7 @@
 #if HARDWARE_TYPE==0 // Arduino
 
  #define GREEN_LED 12 // All Good LED Turns green when data is being sent over UDP Connection
- #define RED_LED 13   // Error LED Turns Red when error is encountered, turns off if all is okay
+ #define RED_LED 11   // Error LED Turns Red when error is encountered, turns off if all is okay
 
  #define resetPin 3 // Set reset pin
 
@@ -52,6 +52,26 @@
 
  #define DEBUG_TX_PIN 4 // PD4 нога вывода отладки
 
+#elif HARDWARE_TYPE==2 // CoolBeacon board
+
+
+ #define GSM_DTR  6  // PD6
+ #define GSM_RING A2  
+ #define GSM_RX   8  // PB0
+ #define GSM_TX   9  // PB1
+ #define GSM_EN   10 // PB2
+
+
+ //-------- Chute section
+
+ #define CHUTE_PIN 4 // PD4 нога 2
+
+  #define Red_LED   5  // PD5    // Error LED Turns Red when error is encountered, turns off if all is okay
+  #define Green_LED 7  // PD7    // All Good LED Turns green when data is being sent over UDP Connection
+
+ #define resetPin 3 // Set reset pin
+
+ #define DEBUG_TX_PIN 13 // нога вывода отладки
 
 #else
     #error "Bad Hardware Type"

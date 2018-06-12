@@ -319,7 +319,8 @@ uint8_t GSM::command(char* cmd, const char* answer2, uint16_t time){
     readOut();
 
 #ifdef GSM_DEBUG
-debug.printf_P(PSTR("# want: OK or %S\n"),answer2);
+debug.print_P(PSTR("# want: OK or ");
+debug.println_P(answer2);
 debug.print_P(PSTR("#> AT"));
 debug.println_P(cmd);
 #endif
