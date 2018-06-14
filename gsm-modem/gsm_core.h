@@ -302,8 +302,9 @@ uint8_t GSM::command_P(const char* cmd, const char* answer, const char* answer2,
     readOut();
 
 #ifdef GSM_DEBUG
-debug.printf_P(PSTR("# want: %S or %S\n"),answer,answer2);
-debug.print_P(PSTR("#> AT"));
+debug.printf_P(PSTR("# want: %S"),answer);
+if(answer2) debug.printf_P(PSTR(" or %S"),answer2);
+debug.print_P(PSTR("\n#> AT"));
 debug.println_P(cmd);
 #endif
 
