@@ -13,16 +13,6 @@
 
 byte * BS::bufpos;
 
-
-BS::BS()
-{
-}
-
-/*void BS::begin(char *p)
-{
-    bufpos = (byte *)p;
-}*/
-
 //------------------ write ---------------------------------------------------
 
 size_t BS::write(uint8_t c){

@@ -46,13 +46,17 @@ BS bs; // BuffStream
 #include "gsm.h"
 
 
-SingleSerialPort(trueSerial);        // hardware
-Timer2Serial debug(0, DEBUG_TX_PIN); // only tx
+//SingleSerialPort(trueSerial);        // hardware
 GSM gsm;                             // AltSoftSerial
+#ifdef DEBUG
+Timer2Serial debug(0, DEBUG_TX_PIN); // only tx
+#elif defined DEBUG_UART
+#define debug serial
+#endif
 
 
 #include "gsmSerial.h"
-gsmSerial serial; // fake one which act as gsm-serial bridge
+gsmSerial serial; // fake one which can act as gsm-serial bridge
 
 
 #include "gsm_core.h"
@@ -73,35 +77,44 @@ char strBuf[STR_BUF_SIZE];
 char *strPtr = &strBuf[0];
 
 
+static void do_reboot(){
+    for(int i=0; i<15; i++){ // 9 seconds of flashing
+        Red_LED_OFF;
+        delay_300();
+        Red_LED_ON;
+        Green_LED_OFF;
+        delay_300();
+        Green_LED_ON;
+    }
+                        // and then restart
+    __asm__ __volatile__ (    // Jump to RST vector
+        "clr r30\n"
+        "clr r31\n"
+        "ijmp\n"
+    );
+}
+
 void init_GSM(){
     // Initializing GSM Module
+#ifdef DEBUG
 debug.println_P(PSTR("Initializing..."));
+#endif
 
 again:
 
 //      try to Start GSM Module Communication
     if(!gsm.begin() ) {
-	for(int i=0; i<15; i++){ // 9 seconds of flashing
-            Red_LED_OFF;
-            delay_300();
-            Red_LED_ON;
-            Green_LED_OFF;
-            delay_300();
-            Green_LED_ON;
-	}
-                        // and then restart
-        __asm__ __volatile__ (    // Jump to RST vector
-            "clr r30\n"
-            "clr r31\n"
-            "ijmp\n"
-        );
-
+        do_reboot();
     }
 
+#ifdef DEBUG
 debug.println_P(PSTR("SIM800 Ready & Loading"));
+#endif
 
     isReady = true;
+#ifdef DEBUG
 debug.println_P(PSTR("Registered: Starting Configuration"));
+#endif
 
 
     if(!gsm.initGPRS()) goto again;
@@ -110,7 +123,9 @@ debug.println_P(PSTR("Registered: Starting Configuration"));
 
     if(!gsm.setAPN(p.apn)) goto again;
 
+#ifdef DEBUG
 debug.println_P(PSTR("APN Set"));
+#endif
 
 
 }
@@ -151,15 +166,17 @@ DBG_PRINTF("c=%x\n", c);
                 }
             }
             if(cnt == sizeof(patt)-1){
+#ifdef DEBUG
 debug.println_P(PSTR("console OK"));
+#endif
+
                 if(!is_eeprom_valid()) {
-                   DBG_PRINTLN("CRC!\n");
+   DBG_PRINTLN("CRC!\n");
                     write_Params_ram_to_EEPROM();
                 }
 
 
                 Read_EEPROM_Config();
-
 		
 
                 while(true){
@@ -328,8 +345,10 @@ void setup()
 #endif
 
     gsm.initGSM();  // настроить ноги к GSM модулю
-    
+
+#ifdef DEBUG
     debug.begin(DEBUG_SPEED); // Start Debug Port (For Monitor/Debug only)
+#endif
 
     serial.begin(TELEMETRY_SPEED); // Start Autopilot/Console Communication 
 
@@ -339,12 +358,14 @@ void setup()
 
 
 /* speed test
+#ifdef DEBUG
    debug._tx_delay=10;
 again:
    debug._tx_delay ++; // 132
    debug.printf_P(PSTR("Timer2Serial speed test v1234567890 i=%d\n"), debug._tx_delay);
 
   if(debug._tx_delay < 255) goto again;
+#endif
 //*/
 
     if(!isReady)
@@ -391,27 +412,30 @@ void loop(){
 	Red_LED_ON;    // Turn off Warning LED
 	Green_LED_ON;
 
-	gsm.initUDP(p.port);
+	if(!gsm.initUDP(p.port)) do_reboot();
+
+#ifdef DEBUG
 debug.println_P(PSTR("Connecting to UDP Server"));
+#endif
 
-	gsm.connectUDP(p.url, p.port);
+	if(gsm.connectUDP(p.url, p.port)){
 	
-    // now we in transparent data mode, exit by DTR, to return back say "ATO"
-        serial.gsmMode(1);
+        // now we in transparent data mode, exit by DTR, to return back say "ATO"
+            serial.gsmMode(1);
+#ifdef DEBUG
 debug.println_P(PSTR("Connected!"));
+#endif
+            Green_LED_ON; // Turn on All Good LED
+            Red_LED_OFF;    // Turn off Warning LED
 
-	Green_LED_ON; // Turn on All Good LED
-	Red_LED_OFF;    // Turn off Warning LED
-
-	delay_1000();
-	Green_LED_OFF;
+	    delay_1000();
+	    Green_LED_OFF;
+	}
     }
 
 // now we has a place for misc housekeeping - communication protocol parsed and variables filled by data
 
     // at the end of HEARTBEAT packet we can add own state packet    
-
-
 }
 
 

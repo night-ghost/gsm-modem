@@ -1,5 +1,4 @@
 /*
-
     Нативная библиотека GSM чудовищна и огромна, а  нам много не надо
 
     к тому же нога прерывания, нужная для работы SoftwareSerial, занята
@@ -14,7 +13,7 @@ http://arduino.ua/ru/guide/ArduinoGSMShield
 
 */
 
-// printf without float
+// printf without float to reduce size
 #define SKIP_FLOAT
 
 //#define RX_BUFFER_SIZE 64 // AltSoftSerial buffer
@@ -25,8 +24,6 @@ http://arduino.ua/ru/guide/ArduinoGSMShield
 #include <AltSoftSerial.h>
 #include <avr/power.h>
 
-//extern gsmSerial serial;
-
 
 #include "Arduino.h"// Get the common arduino functions
 
@@ -34,9 +31,10 @@ http://arduino.ua/ru/guide/ArduinoGSMShield
 #include "gsm.h"
 #include "protocols.h"
 
-
-#define GSM_DEBUG 1
-//#define USSD_DEBUG 1
+#ifdef DEBUG
+ #define GSM_DEBUG 1
+ //#define USSD_DEBUG 1
+#endif
 
 extern GSM gsm;
 extern void delay_300();
@@ -341,8 +339,7 @@ uint8_t GSM::wait_answer(const char* answer, const char* answer2, unsigned int t
     unsigned long deadtime = millis() + timeout*100; // time in 0.1s
     char has_answer=0;
     result2_ptr=0;
-
-    byte hasAnswer2 = (answer2 == 0);
+    bool has_eol = false;
 
     Red_LED_ON; 	// при работе с GSM красный мыргает на каждую команду и зеленый при получении данных
     delay_100(); // модуль не особо шустрый
@@ -361,55 +358,56 @@ debug.print_P(PSTR("\n"));
         	char c;
         	*cp++ = c = read_S();
         	*cp=0;// string is always closed
+        	if(c==0x0A || c==0x0d) has_eol = true;
 #ifdef GSM_DEBUG
 debug.print(c); 
 #endif
     	    } while(available_S()); // вычитать все что есть, а потом проверять будем
 
     	    Green_LED_OFF;
+    	    if(has_eol) break; // got full line
+    	}
+    } while( millis() < deadtime ); // Waits for the asnwer with time out
 
-	    // данные закончились, можно и проверить, если еще ответ не получен
-	    if(!has_answer) { 
-                // check if the desired answer  is in the response of the module
-                if((result_ptr=strstr_P(GSM_response, answer)) != NULL)  { // окончательный ответ
-                    has_answer = 1;
-#ifdef GSM_DEBUG
-debug.print_P(PSTR("="));
-#endif
-                } else
-                if((result_ptr=strstr_P(GSM_response, PSTR("ERROR"))) != NULL)  { // окончательная ошибка
-                    has_answer = 3;
+    // данные закончились, можно и проверить, если еще ответ не получен
+    if((result_ptr=strstr_P(GSM_response, PSTR("ERROR"))) != NULL)  { // окончательная ошибка
+        has_answer = 3;
 #ifdef GSM_DEBUG
 debug.print_P(PSTR(" ERR"));
 #endif
-                }
+    } else
+    if((result_ptr=strstr_P(GSM_response, PSTR("FAIL"))) != NULL)  { // окончательная ошибка
+        has_answer = 3;        
+#ifdef GSM_DEBUG
+debug.print_P(PSTR(" FAIL"));
+#endif
+    }else
+    // check if the desired answer  is in the response of the module
+    if((result_ptr=strstr_P(GSM_response, answer)) != NULL)  { // окончательный ответ
+        has_answer = 1;
+#ifdef GSM_DEBUG
+debug.print_P(PSTR("="));
+#endif
+    }
+
 #if defined(USE_GPRS)
-                if((result_ptr=strstr_P(GSM_response, PSTR("DEACT"))) != NULL)  { // окончательная ошибка
-                    doOnDisconnect();
-		}
+    if((result_ptr=strstr_P(GSM_response, PSTR("DEACT"))) != NULL)  { // окончательная ошибка
+        doOnDisconnect();
+    }
 #endif
 
-            }
-
-            if( answer2 !=NULL) {
-                result2_ptr=strstr_P(GSM_response, answer2); // промежуточный ответ
-                hasAnswer2 = (result2_ptr!=0);
+    if( answer2 !=NULL) {
+        result2_ptr=strstr_P(GSM_response, answer2); // промежуточный ответ
 #ifdef GSM_DEBUG
 debug.printf_P(PSTR("#2< "),result2_ptr);
 #endif
-            }
+    }
 
-            // TODO: контролировать разбиение на строки?
-        } else if(has_answer && hasAnswer2) // за время ожидания ничего не пришло - данные кончились, если ответ получен - готово
-    	    break;
-    } while( millis() < deadtime ); // Waits for the asnwer with time out
-
-    
 #ifdef GSM_DEBUG
 debug.println("\n# done");
 #endif
 
-    return lastError=has_answer;
+    return (lastError=has_answer);
 }
 
 uint8_t GSM::wait_answer(const char* answer, unsigned int timeout){

@@ -6,7 +6,8 @@
 */
 #define HARDWARE_TYPE 0
 
-#define DEBUG
+#define DEBUG        // debug via pin 13 as TX
+//#define DEBUG_UART   // debug via UART
 
 #define TELEMETRY_SPEED 57600
 
@@ -88,9 +89,14 @@
 
 #ifdef DEBUG
   #define DBG_PRINTLN(x)     { { debug.print_P(PSTR(x)); debug.println();  debug.wait();  } }
-  #define DBG_PRINTVARLN(x)  { { debug.print(#x); debug.print(": "); debug.println(x);  debug.wait();  } }
-  #define DBG_PRINTVAR(x)    { { debug.print(#x); debug.print(": "); debug.print(x); debug.print(" ");  } }
+  #define DBG_PRINTVARLN(x)  { { debug.print(#x); debug.print(": "); debug.println(x); debug.wait();  } }
+  #define DBG_PRINTVAR(x)    { { debug.print(#x); debug.print(": "); debug.print(x); debug.print(" "); serial.wait(); } }
   #define DBG_PRINTF(x,...)  { { debug.printf_P(PSTR(x),## __VA_ARGS__); debug.wait();  } }
+#elif defined(DEBUG_UART)
+  #define DBG_PRINTLN(x)     { { serial.print_P(PSTR('#' ## x)); serial.println();  serial.wait();  } }
+  #define DBG_PRINTVARLN(x)  { { serial.print('#' ## #x); serial.print(": "); serial.println(x); serial.wait();  } }
+  #define DBG_PRINTVAR(x)    { { serial.print('#' ## #x); serial.print(": "); serial.print(x);   serial.print(" "); serial.wait();  } }
+  #define DBG_PRINTF(x,...)  { { serial.printf_P(PSTR('#' ## x),## __VA_ARGS__); serial.wait();  } }
 #else
   #define DBG_PRINTLN(x)     {}
   #define DBG_PRINTVAR(x)    {}
