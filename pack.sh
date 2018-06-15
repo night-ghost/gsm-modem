@@ -14,6 +14,7 @@ rm -rf $BUILD
 rm -f latest.zip
 zip -r latest.zip Released
 
+git commit -m "pre-binaries"
 git add . -A
-git commit
+git commit -m binaries
 git push
