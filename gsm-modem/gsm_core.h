@@ -50,6 +50,8 @@ byte GSM::isTransparent=0;
 byte GSM::isActive=0;
 byte GSM::isGPRS=0;
 
+bool GSM::_isUDP=false;
+
 static const char PROGMEM s_cpin_q[]="+CPIN?";
 static const char PROGMEM s_creg_q[]="+CREG?";
 static const char PROGMEM s_cpin_a[]="CPIN: READY";
@@ -321,7 +323,7 @@ uint8_t GSM::command(char* cmd, const char* answer2, uint16_t time){
 debug.print_P(PSTR("# want: OK"));
 if(answer2) debug.printf_P(PSTR(" or %S"),answer2);
 debug.print_P(PSTR("#> AT"));
-debug.println_P(cmd);
+debug.println(cmd);
 #endif
 
     gsm.print_P(s_at);    // Send the AT command
@@ -340,10 +342,6 @@ uint8_t GSM::wait_answer(const char* answer, const char* answer2, unsigned int t
     char has_answer=0;
     result2_ptr=0;
     bool has_eol = false;
-
-    Red_LED_ON; 	// при работе с GSM красный мыргает на каждую команду и зеленый при получении данных
-    delay_100(); // модуль не особо шустрый
-    Red_LED_OFF; 
 
 #ifdef GSM_DEBUG
 debug.print_P(PSTR("\n"));
@@ -446,7 +444,7 @@ char * GSM::getRSSI(){
     return result2_ptr+sizeof(patt)-1;
 }
 
-static const char PROGMEM patt_minus[] = "\x1c\x38\x3d\x43\x41\x3a"; //1c 38 3d 43 41 3a - Минус в UTF без старшего байта
+static const char PROGMEM patt_minus[] = "\x1c\x38\x3d\x43\x41\x3a"; //1c 38 3d 43 41 3a - 'Минус' в UTF без старшего байта
 
 
 
@@ -593,12 +591,12 @@ debug.printf_P(PSTR(" !!!=%s\n"),(char *)buf);
 }
 
 
-int GSM::balance(byte n){
+int GSM::balance(byte n){  // return value in Buf
+
     if(!sendUSSD(n)) {
 	return 0; //
     }
     
-    // in Buf
 
     char data[14];
     char *cp=data;
@@ -612,15 +610,10 @@ int GSM::balance(byte n){
 	else if(c>='0' && c <= '9') { // digits
 	    *cp++ = c;
 	    *cp=0;
-
-//serial.println(ptr);
-//serial.println(data);
-
 	}
 	else if(c=='.' || c==',') break;
 	// skip others
     }
-//serial.println(data);
 
     if(!strlen(data)) return 0;
 
@@ -711,7 +704,7 @@ bool GSM::initGPRS(){
 	command_P(PSTR("+CIPMUX=0"))&& // Single channel communication (ie only one socket can be opened)
 	command_P(PSTR("+CIPMODE=1"))&& // Transparent bridge mode
 //(NmRetry:3-8),(WaitTm:2-10),(SendSz:1-1460),(esc:0,1) ,(Rxmode:0,1), (RxSize:50-1460),(Rxtimer:20-1000
-	command_P(PSTR("+CIPCCFG=8,10,300,0,0,460,50")) &&  // GPRS params
+	command_P(PSTR("+CIPCCFG=8,2,256,0,0,460,50")) &&  // GPRS params
 	command_P(PSTR("+CGATT=1"),750); // Attach GPRS - 75s
 	//                 mode,subset,portspeed(4->57600),frame size, ack time,
 //	command_P(PSTR("+CMUX=0,0,4,32768,10,3,30,10,2")); // GPRS/IP params
@@ -758,9 +751,13 @@ bool GSM::setAPN(char *apn) {
     return 1==command(str);
 }
 
+static const PROGMEM char s_udp[]="UDP";
+static const PROGMEM char s_tcp[]="TCP";
 
-bool GSM::initUDP(uint16_t port){
+bool GSM::initLink(uint16_t port, bool isUDP){
     char str[64];
+    
+    _isUDP = isUDP;
     
     bool f=
         command_P(PSTR("+CIICR"),30) && // Connect!
@@ -772,7 +769,9 @@ bool GSM::initUDP(uint16_t port){
 
 
     bs.begin(str);
-    bs.print_P(PSTR("+CLPORT=\"UDP\","));  // Prep UDP Port 8888
+    bs.print_P(PSTR("+CLPORT=\""));  // Prep local UDP Port 8888
+    bs.print(isUDP?s_udp:s_tcp);
+    bs.print_P(PSTR("\","));  
     bs.print(port);
 
 #ifdef GSM_DEBUG
@@ -790,7 +789,9 @@ bool GSM::connectUDP(char *url, uint16_t port){
     bs.begin(str);
 
     // AT+CIPSTART="protocol","ip address or domain","port #"
-    bs.print_P(PSTR("+CIPSTART=\"UDP\",\"")); 
+    bs.print_P(PSTR("+CIPSTART=\""));
+    bs.print(_isUDP?s_udp:s_tcp);
+    bs.print_P(PSTR("\",\"")); 
     bs.print(url);
     bs.print_P(PSTR("\","));
     bs.print(port);

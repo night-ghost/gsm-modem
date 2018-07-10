@@ -1,21 +1,25 @@
 
 struct Params {
-
+    uint32_t vers;
     uint32_t port;
+    uint32_t mode;
+    uint32_t xx;
 
-#define PARAMS_END 1
+#define PARAMS_END 4
 
-/* 1 .. 17 */
+/* 4 .. 20 */
     char url[64];
 
-/* 18 .. 6 */
+/* 21 .. 37 */
     char apn[64]; // beeline.internet.ru
 
 
 /* 63 END */
 
 } p = { 
+            EEPROM_VERSION,    
 /* 0 */     DATA_PORT,
+            0,          //TCP
 
 /* 46 */    DATA_URL,
 

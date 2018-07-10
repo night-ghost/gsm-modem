@@ -57,7 +57,6 @@ again:
 
 #if defined(AUTOBAUD)
 	    serial.end();
-	    Red_LED_ON;
 	    Green_LED_ON; // two leds together = no valid data
 	    static uint8_t last_pulse = 15;
 	    uint32_t pt = millis() + 100; // не более 0.1 секунды
@@ -95,7 +94,6 @@ again:
         	
 	    serial.begin(speed);
 	    Green_LED_OFF;
-	    Red_LED_OFF;
 #endif    
 	
 	    lflags.data_mode=true; // пробуем почитать данные

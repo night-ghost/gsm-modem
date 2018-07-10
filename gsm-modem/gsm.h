@@ -61,8 +61,8 @@ class GSM: public AltSoftSerial
     static int balance(byte n);
     static bool initGPRS();
     static bool setAPN(char*);
-    static bool initUDP(uint16_t);
-    static bool connectUDP(char *url, uint16_t port);
+    static bool initLink(uint16_t,bool isUDP);
+    static bool connectLink(char *url, uint16_t port);
     static void doOnDisconnect();
     static void pulseDTR();
     static void pulseReset();
@@ -77,6 +77,9 @@ class GSM: public AltSoftSerial
     static const PROGMEM char s_ok[];
     
     static byte isGPRS;
+    
+private:
+    static bool _isUDP;
 };
 
 #endif

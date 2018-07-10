@@ -136,7 +136,6 @@ void consoleCommands(){
         loc_p=p;
                                     
         Green_LED_ON;
-        Red_LED_ON;
 
         static const char PROGMEM patt[] = "gsm-modem";
         delay(1000); 
@@ -169,6 +168,7 @@ DBG_PRINTF("c=%x\n", c);
 #ifdef DEBUG
 debug.println_P(PSTR("console OK"));
 #endif
+                Green_LED_ON;
 
                 if(!is_eeprom_valid()) {
    DBG_PRINTLN("CRC!\n");
@@ -231,9 +231,9 @@ DBG_PRINTF("eeprom write\n");
                             if(!isReady)
                                 init_GSM();
 
-                            lflags.data_link_active=true;
+                            lflags.data_link_active=true; // emulate valid MAVlink packet
                             loop();
-                            
+            
                             gsm.println_P(PSTR("GSM Modem connected OK!"));
                             serial.println_P(PSTR("Modem connected OK!"));
                             break;
@@ -325,7 +325,6 @@ DBG_PRINTF("new s%d=%s\n",n,(char *)bp);
 console_done:
 DBG_PRINTF("exit console\n");
         Green_LED_OFF;
-        Red_LED_OFF;
 
 }            
 
@@ -412,13 +411,13 @@ void loop(){
 	Red_LED_ON;    // Turn off Warning LED
 	Green_LED_ON;
 
-	if(!gsm.initUDP(p.port)) do_reboot();
+	if(!gsm.initLink(p.port,p.mode!=0)) do_reboot();
 
 #ifdef DEBUG
-debug.println_P(PSTR("Connecting to UDP Server"));
+debug.println_P(PSTR("Connecting to Server"));
 #endif
 
-	if(gsm.connectUDP(p.url, p.port)){
+	if(gsm.connectLink(p.url, p.port)){
 	
         // now we in transparent data mode, exit by DTR, to return back say "ATO"
             serial.gsmMode(1);

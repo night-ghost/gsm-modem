@@ -22,12 +22,12 @@ void check_disconnect(char b);
 void readGSM() {         // трансляция всего с GSM
     if(gsm.available_S()) { // Relay All GSM Module communication to Autopilot and Debug ( Debug for monitor/debug only)
         char c;
-        Red_LED_ON;
+        Green_LED_ON;
          c=gsm.read_S();
          SingleSerial::write_S(c);
 //      debug.print(c);
          check_disconnect(c);
-        Red_LED_OFF;
+        Green_LED_OFF;
     }
 }
 

@@ -1,4 +1,6 @@
 
+#define EEPROM_VERSION 0x1001
+
 /*
     board type
     0 - arduino pro mini + Sim800
