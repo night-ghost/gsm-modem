@@ -8,6 +8,7 @@
 */
 #define HARDWARE_TYPE 0
 
+
 #define DEBUG        // debug via pin 13 as TX
 //#define DEBUG_UART   // debug via UART
 
@@ -41,7 +42,7 @@
 #elif HARDWARE_TYPE==1 // CoolBeacon board
 
  #define GREEN_LED 7 // All Good LED Turns green when data is being sent over UDP Connection
- #define RED_LED 5   // Error LED Turns Red when error is encountered, turns off if all is okay
+ #define RED_LED 5   // Error LED Turns Red when error is encountered, turns off if all is okay and connected
 
 // #define resetPin 3 // Set reset pin
 
