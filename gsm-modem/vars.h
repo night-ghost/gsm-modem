@@ -20,6 +20,7 @@ struct Params {
             EEPROM_VERSION,    
 /* 0 */     DATA_PORT,
             0,          //TCP
+            0,          // xx
 
 /* 46 */    DATA_URL,
 

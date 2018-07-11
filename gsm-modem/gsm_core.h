@@ -111,18 +111,19 @@ const static PROGMEM uint32_t speeds[]= { 74880, 115200, 38400, 57600,  9600, 14
 
 bool GSM::syncSpeed() {
 // 1st try, if all is good
-    if(GSM::command(PSTR(""), 200) ) return true; // module answered on pre-defined speed
+    if(GSM::command_P(PSTR(""), 200) ) return true; // module answered on pre-defined speed
 
 // not good, try to sync speed
     for(byte s=0; s<NUM_SPEEDS; s++){
         for(byte i=15;i!=0; i--)                        // speed negotiation
-            if(GSM::command(PSTR(""), 200) ) { // got answer!
+            if(GSM::command_P(PSTR(""), 200) ) { // got answer!
+                bool ret=false;
                 do {
-                    bool ret=GSM::command(PSTR("+IPR=" TO_STRING(GSM_SPEED)  ";&w" ));
+                    ret=GSM::command_P(PSTR("+IPR=" TO_STRING(GSM_SPEED)  ";&w" ));
                 } while(!ret);
                 AltSoftSerial::end();
                 AltSoftSerial::begin(GSM_SPEED);
-                return GSM::command(PSTR(""), 200);
+                return GSM::command_P(PSTR(""), 200);
             }
 
         AltSoftSerial::end();
@@ -810,7 +811,7 @@ debug.print(str);
     return 1==command(str);
 }
 
-bool GSM::connectUDP(char *url, uint16_t port){
+bool GSM::connectLink(char *url, uint16_t port){
     readOut();
 
     char str[64];
